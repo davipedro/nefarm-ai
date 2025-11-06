@@ -35,5 +35,7 @@ A arquitetura orientada a serviços (SOA) foi escolhida por permitir:
 Alinhando-se aos princípios dos MCPs. 
 Cada serviço representa uma função independente, facilitando evolução, integração com MCPs e manutenção controlada do sistema.
 
-<img width="1124" height="1600" alt="image" src="https://github.com/user-attachments/assets/1c78f88a-d7e1-445c-bc0a-38ab2b445c3c" />
+<!-- <img width="1124" height="1600" alt="image" src="https://github.com/user-attachments/assets/1c78f88a-d7e1-445c-bc0a-38ab2b445c3c" /> -->
+<img width="1435" height="860" alt="diagrama-arquitetonico-topologico-simplificado" src="https://github.com/user-attachments/assets/f006e772-0c4d-4553-ac62-745f58ff552e" />
+
 
