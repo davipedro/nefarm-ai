@@ -1,0 +1,44 @@
+# Core dependencies
+python-dotenv>=1.0.0
+
+# MCP SDK
+mcp>=0.9.0
+
+# API Gateway
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+websockets>=12.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# Web Scraping (PMC Extractor)
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+requests>=2.31.0
+
+# IA/NLP (IA Local MCP)
+transformers>=4.35.0
+torch>=2.1.0
+sentencepiece>=0.1.99
+
+# Browser automation (browser-use MCP - external)
+browser-use>=0.1.0
+
+# Utilities
+aiofiles>=23.2.0
+httpx>=0.25.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+httpx>=0.25.0  # For FastAPI testing
+
+# Code quality
+black>=23.0.0
+ruff>=0.1.0
+mypy>=1.7.0
+
+# Development
+ipython>=8.17.0
+ipdb>=0.13.13

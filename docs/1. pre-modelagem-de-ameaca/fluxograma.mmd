@@ -1,0 +1,18 @@
+sequenceDiagram
+    participant U as 🧑 Usuário
+    participant C as 💬 Cliente MCP (Interface do Usuário)
+    participant M as 🧠 Main MCP (Orquestrador)
+    participant P as 📚 PMC MCP (Busca e extração de artigos)
+    participant L as 🤖 IA Local (Classificação de imagens)
+    participant B as 🌐 Browser Use MCP (Automação Web)
+
+    U->>C: Solicita pesquisa ou artigo específico (termo, ID, PMCID)
+    C->>M: Envia requisição de pesquisa
+    M->>P: Solicita dados e figuras do artigo no PMC
+    P-->>M: Retorna dados, legendas e URLs das imagens
+    M->>L: Envia imagens para classificação
+    L-->>M: Retorna apenas as imagens que são gráficos
+    M->>B: Solicita extração dos dados dos gráficos selecionados
+    B->>M: Executa extração automatizada no WebPlotDigitizer
+    B-->>M: Retorna dados do gráfico em formato CSV
+    M-->>C: Retorna os dados processados ao usuário
