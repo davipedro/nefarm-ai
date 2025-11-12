@@ -1,0 +1,15 @@
+---
+config:
+  theme: mc
+  layout: dagre
+---
+flowchart TD
+    A["Front end"] <--> B@{ label: "<span style=\"color:\">+ MCP Solicitador (IA Externa)</span>" }
+    B <--> n1@{ label: "<span style=\"color:\" data-darkreader-inline-color=\"\">PMC MCP Busca/Extração Artigos</span>" }
+    n2@{ label: "<span style=\"color:\" data-darkreader-inline-color=\"\">IA Local Classificação de gráficos por legenda</span>" } <--> B
+    n3@{ label: "<span style=\"color:\" data-darkreader-inline-color=\"\">Browser Use MCP Automação Web</span>" } <--> B
+    B@{ shape: rect}
+    n1@{ shape: rect}
+    n2@{ shape: rect}
+    n3@{ shape: rect}
+
