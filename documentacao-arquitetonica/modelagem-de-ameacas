@@ -1,0 +1,62 @@
+# 🧠 Modelagem de Ameaças — Projeto Nefarm-AI
+
+## 🎯 Objetivo
+Identificar e mitigar possíveis vulnerabilidades no sistema **Nefarm-AI**, que utiliza múltiplos agentes MCP e um modelo local de IA para extração e classificação de gráficos científicos.
+
+Metodologia utilizada: **STRIDE**
+
+---
+
+## 🗺️ Elementos do Sistema
+- **Frontend (React):** interface web para interação com o usuário.
+- **Servidor MCP (Python):** orquestra as comunicações entre módulos.
+- **Agentes de Processamento:** executam tarefas específicas (extração, classificação, etc).
+- **IA Local (modelo embarcado):** executa inferências offline.
+- **Banco de Dados:** armazena resultados e logs.
+- **Container Docker:** encapsula e isola cada serviço.
+- **Usuário:** entidade externa que interage com o sistema.
+
+---
+
+## 🔐 Ameaças Identificadas (Metodologia STRIDE)
+
+| ID | Ameaça | Categoria STRIDE | Elemento Afetado | Impacto | Probabilidade | Medidas de Mitigação | Risco Residual |
+|----|---------|------------------|------------------|----------|----------------|----------------------|----------------|
+| 1 | **Falsificação de credenciais de acesso** | Spoofing | Frontend / MCP Server | Alto | Média | Implementar autenticação por token JWT e uso de HTTPS. | Baixo |
+| 2 | **Manipulação de requisições entre frontend e backend** | Tampering | API MCP | Alto | Alta | Criptografia de transporte (TLS) e verificação de integridade. | Médio |
+| 3 | **Repúdio de ações por usuários** | Repudiation | Banco de dados / Logs | Médio | Média | Implementar logs imutáveis com timestamps e IDs de sessão. | Baixo |
+| 4 | **Exposição de dados sensíveis durante o processamento** | Information Disclosure | IA Local / MCP | Alto | Média | Criptografia local e controle de acesso a diretórios. | Baixo |
+| 5 | **Sobrecarga do servidor MCP** | Denial of Service | MCP Server | Alto | Alta | Limite de requisições por IP e balanceamento de carga. | Médio |
+| 6 | **Usuário comum obtém privilégios administrativos** | Elevation of Privilege | Frontend / Auth | Alto | Média | Controle de papéis (RBAC) e verificação no backend. | Baixo |
+| 7 | **Injeção de código nos dados enviados à IA Local** | Tampering | IA Local | Alto | Média | Sanitização de entrada e validação de arquivos antes do processamento. | Baixo |
+| 8 | **Roubo de modelo local (IA)** | Information Disclosure | IA Local | Médio | Baixa | Ofuscação e criptografia do modelo embarcado. | Baixo |
+| 9 | **Interceptação de tráfego entre containers** | Information Disclosure | Containers Docker | Alto | Média | Configuração de rede privada Docker e comunicação via TLS. | Baixo |
+| 10 | **Modificação não autorizada de containers** | Tampering | Docker / Orquestração | Alto | Média | Assinatura de imagens e verificação de integridade. | Baixo |
+| 11 | **Perda de dados em caso de falha de container** | Denial of Service | Banco de Dados / Docker | Médio | Alta | Backup periódico e persistência em volume externo. | Baixo |
+| 12 | **Erro de autenticação permitindo brute-force** | Spoofing | Frontend / API | Médio | Média | Limite de tentativas e bloqueio temporário de IPs. | Baixo |
+| 13 | **Falha de atualização do modelo de IA local** | Denial of Service | IA Local | Médio | Média | Verificação de versão e rollback seguro. | Baixo |
+
+---
+
+## ⚙️ Matriz de Risco
+
+| Impacto / Probabilidade | Baixa (5) | Média (10) | Alta (15) |
+|--------------------------|------------|-------------|------------|
+| **Baixo (5)** | 25 | 50 | 75 |
+| **Médio (10)** | 50 | 100 | 150 |
+| **Alto (15)** | 75 | 150 | 225 |
+
+> Ameaças com pontuação ≥150 são consideradas **prioritárias** para mitigação imediata (ex: #2, #5).
+
+---
+
+## 🛡️ Conclusão
+A aplicação da metodologia **STRIDE** no **Nefarm-AI** permitiu identificar 13 ameaças principais, abrangendo os diferentes módulos do sistema.  
+As mitigações propostas reduzem significativamente os riscos relacionados à confidencialidade, integridade e disponibilidade dos dados.
+
+A revisão deverá ser contínua conforme:
+- Novos agentes MCP forem adicionados.
+- O modelo de IA for atualizado.
+- A infraestrutura Docker evoluir.
+
+
