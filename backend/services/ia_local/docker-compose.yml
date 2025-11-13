@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Serviço Ollama - IA Local
   ollama:
@@ -8,18 +6,16 @@ services:
     ports:
       - "11434:11434"
     volumes:
-      - ollama_data:/root/.ollama
+      - ollama:/root/.ollama
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      test: ["CMD-SHELL", "ollama list || exit 1"]
       interval: 10s
-      timeout: 5s
+      timeout: 10s
       retries: 5
       start_period: 30s
     restart: unless-stopped
-    networks:
-      - ia-network
 
-  # Serviço para baixar o modelo automaticamente
+  # Serviço para baixar o modelo llama3:8b automaticamente
   ollama-model-loader:
     image: ollama/ollama
     container_name: ollama-model-loader
@@ -31,23 +27,17 @@ services:
       -c "
       echo '🔄 Aguardando Ollama estar pronto...';
       sleep 5;
-      echo '📥 Baixando modelo tinyllama...';
-      ollama pull tinyllama;
-      echo '✅ Modelo tinyllama baixado com sucesso!';
+      echo '📥 Baixando modelo llama3:8b...';
+      ollama pull llama3:8b;
+      echo '✅ Modelo llama3:8b baixado com sucesso!';
       echo '🎯 Testando modelo...';
-      ollama run tinyllama 'Hello, world!' --verbose;
-      echo '✅ Setup completo! Ollama está pronto para uso.';
+      ollama run llama3:8b 'Hello, world!';
+      echo '✅ Setup completo! Ollama com llama3:8b está pronto para uso.';
       "
     environment:
       - OLLAMA_HOST=http://ollama:11434
-    networks:
-      - ia-network
     restart: "no"
 
 volumes:
-  ollama_data:
+  ollama:
     driver: local
-
-networks:
-  ia-network:
-    driver: bridge
