@@ -2,9 +2,9 @@
 
 ## 3.1. Introdução
 
-Com base nas **20 ameaças críticas** identificadas na modelagem STRIDE, este documento apresenta a estratégia de mitigação implementada através da introdução de um **API Gateway** como camada de segurança centralizada.
+Com base nas identificadas na modelagem STRIDE, este documento apresenta a estratégia de mitigação implementada através da introdução de um **API Gateway** como camada de segurança centralizada.
 
-O objetivo é reduzir significativamente o risco do sistema, especialmente nas **8 ameaças críticas** (≥150 pontos) que representam 65% do risco total.
+O objetivo é reduzir significativamente o risco do sistema, especialmente nas ameaças críticas (≥150 pontos).
 
 ---
 
