@@ -2,9 +2,9 @@
 
 ## 1.1. Introdução
 
-O **nefarm-ai** é um sistema voltado à extração e análise automatizada de informações visuais presentes em artigos científicos, com foco em identificar e classificar gráficos e imagens relevantes em publicações biomédicas.
+O **nefarm-ai** é um sistema voltado à extração e análise automatizada de informações visuais presentes em artigos científicos, com foco em identificar e extrair dados de gráficos publicados em artigos científicos.
 
-Seu objetivo é agilizar o processo de coleta e organização de dados científicos por meio da integração entre múltiplos agentes inteligentes (MCPs) e um modelo local de inteligência artificial.
+Seu objetivo é agilizar o processo de coleta e organização de dados científicos por meio da integração entre um agente inteligente (MCP) e um modelo local de inteligência artificial.
 
 O sistema segue uma **arquitetura orientada a serviços** (SOA), composta por módulos independentes que se comunicam de forma orquestrada, favorecendo escalabilidade, isolamento e facilidade de manutenção.
 
@@ -80,16 +80,10 @@ Para a modelagem de ameaças, identificamos os seguintes elementos:
   - IA Local (Classificação de gráficos)
   - Browser Use MCP (Automação web)
 
-- **Armazenamento de Dados:**
-  - Banco de dados local (resultados e logs)
-  - Modelos de IA (MobileNetV2)
-  - Cache local
-
 - **Fluxos de Dados:**
   - Frontend ↔ MCP Solicitador
   - MCP Solicitador ↔ MCPs especializados
   - MCPs ↔ Repositórios externos
-  - Sistema ↔ Banco de dados
 
 ---
 

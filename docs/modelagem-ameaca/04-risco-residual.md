@@ -2,7 +2,7 @@
 
 ## 4.1. O que é Risco Residual?
 
-**Risco residual** é o nível de risco que permanece **após** a implementação das medidas de mitigação. Mesmo com controles de segurança robustos, é impossível eliminar completamente todos os riscos — alguns permanecerão devido a:
+**Risco residual** é o nível de risco que permanece **após** a implementação das medidas de mitigação. Mesmo com controles de segurança robustos, é impossível eliminar completamente todos os riscos, alguns permanecerão devido a:
 
 - **Limitações técnicas:** Certas vulnerabilidades são inerentes às tecnologias utilizadas
 - **Custo vs Benefício:** Mitigações extremamente complexas podem não justificar o investimento
@@ -114,15 +114,7 @@ As demais **19 ameaças** foram reduzidas a níveis baixos (≤ 25 pontos) e sã
 
 Além dos riscos residuais conhecidos, existem **ameaças emergentes** que não foram abordadas na modelagem inicial:
 
-### 4.6.1. Ameaças de Supply Chain
-
-| Ameaça | Descrição | Impacto | Recomendação |
-|--------|-----------|---------|--------------|
-| **Dependências maliciosas** | Pacotes npm/pip comprometidos | Alto | Scan automático de dependências (Snyk, Dependabot) |
-| **Imagens Docker maliciosas** | Base images comprometidas | Alto | Uso apenas de imagens oficiais e verificadas |
-| **Modelo de IA envenenado** | Modelos de IA baixados de fontes não confiáveis | Médio | Verificação de hash e assinatura digital |
-
-### 4.6.2. Ameaças de Compliance
+### 4.6.1. Ameaças de Compliance
 
 | Ameaça | Descrição | Impacto | Recomendação |
 |--------|-----------|---------|--------------|
@@ -140,35 +132,9 @@ Além dos riscos residuais conhecidos, existem **ameaças emergentes** que não 
 
 ---
 
-## 4.7. Plano de Monitoramento Contínuo
+## 4.7. Plano de Contingência
 
-### 4.7.1. Métricas de Segurança (KPIs)
-
-| Métrica | Objetivo | Frequência | Alerta |
-|---------|----------|------------|--------|
-| **Tentativas de autenticação falhas** | < 5 por usuário/dia | Tempo real | > 10 tentativas |
-| **Requisições bloqueadas por rate limit** | < 1% do total | Diário | > 5% |
-| **Detecções de prompt injection** | 0 por semana | Semanal | ≥ 1 detecção |
-| **Latência do Gateway** | < 100ms p95 | Contínuo | > 200ms |
-| **Disponibilidade do sistema** | > 99.5% | Contínuo | < 99% |
-| **Vulnerabilidades em dependências** | 0 críticas | Semanal | ≥ 1 crítica |
-
-### 4.7.2. Revisões Periódicas de Segurança
-
-| Atividade | Frequência | Responsável | Entregável |
-|-----------|-----------|-------------|------------|
-| **Análise de logs** | Semanal | Equipe DevOps | Relatório de incidentes |
-| **Revisão de acessos** | Mensal | Administrador | Lista de permissões atualizada |
-| **Scan de vulnerabilidades** | Mensal | Equipe de Segurança | Relatório de CVEs |
-| **Teste de penetração** | Trimestral | Consultor externo | Relatório de pentest |
-| **Revisão de modelagem de ameaças** | Semestral | Arquiteto de Segurança | Documento atualizado |
-| **Auditoria de segurança completa** | Anual | Auditor independente | Relatório de auditoria |
-
----
-
-## 4.8. Plano de Contingência
-
-### 4.8.1. Cenários de Incidente e Resposta
+### 4.7.1. Cenários de Incidente e Resposta
 
 #### 🚨 Cenário 1: Tentativa de Jailbreak Detectada
 
@@ -193,32 +159,13 @@ Além dos riscos residuais conhecidos, existem **ameaças emergentes** que não 
 2. 🔍 Identificar origem do tráfego
 3. 🚫 Blacklist de IPs maliciosos
 
-**Resposta em 1h:**
-1. 📊 Avaliar impacto no serviço
-2. 🔄 Escalar recursos se necessário
-3. 📢 Comunicar usuários legítimos se houver degradação
-
-#### 🚨 Cenário 3: Vulnerabilidade Crítica Descoberta
-
-**Gatilho:** CVE crítica em dependência ou componente
-
-**Resposta Imediata:**
-1. 🔍 Avaliar se sistema está exposto
-2. 🛡️ Aplicar workaround temporário se possível
-3. 🚨 Escalar para equipe de desenvolvimento
-
-**Resposta em 48h:**
-1. 🔄 Atualizar dependência afetada
-2. 🧪 Testar solução em ambiente de staging
-3. 🚀 Deploy de patch de segurança
-
 ---
 
-## 4.9. Aceitação Formal de Riscos
+## 4.8. Aceitação Formal de Riscos
 
-### 4.9.1. Declaração de Aceitação
+### 4.8.1. Declaração de Aceitação
 
-Para o sistema NEFARM-AI na sua configuração atual (pós-mitigação), a equipe de desenvolvimento e stakeholders **aceitam formalmente** os seguintes riscos residuais:
+Para o sistema NEFARM-AI na sua configuração atual (pós-mitigação), a equipe de desenvolvimento **aceita formalmente** os seguintes riscos residuais:
 
 #### ✅ Riscos Aceitos
 
@@ -227,50 +174,11 @@ Para o sistema NEFARM-AI na sua configuração atual (pós-mitigação), a equip
 | **11** | Jailbreaking da IA | 50 (Médio) | Controles implementados são adequados para o contexto de uso acadêmico. Monitoramento contínuo implementado. |
 | **01-10, 12-20** | Diversas | 25 (Baixo) | Riscos minimizados a níveis aceitáveis. Múltiplas camadas de defesa implementadas. |
 
-#### 📋 Condições de Aceitação
-
-A aceitação dos riscos residuais está condicionada a:
-
-1. ✅ **Implementação completa** de todas as medidas de mitigação descritas no documento anterior
-2. ✅ **Monitoramento contínuo** conforme definido neste documento
-3. ✅ **Revisão periódica** da modelagem de ameaças (semestral)
-4. ✅ **Manutenção proativa** de dependências e componentes
-5. ✅ **Capacitação da equipe** em práticas de segurança
-
 ---
 
-## 4.10. Recomendações para Evolução Futura
+## 4.9. Conclusões
 
-### 4.10.1. Melhorias de Curto Prazo (1-3 meses)
-
-| Prioridade | Melhoria | Benefício | Esforço |
-|------------|----------|-----------|---------|
-| 🔴 Alta | Implementar WAF (Web Application Firewall) | Detecção avançada de ataques | Médio |
-| 🔴 Alta | Adicionar 2FA para usuários administrativos | Reforçar autenticação crítica | Baixo |
-| 🟡 Média | Implementar SIEM (Security Information and Event Management) | Correlação de eventos de segurança | Alto |
-| 🟡 Média | Criptografia de dados em repouso | Proteção adicional de dados sensíveis | Médio |
-
-### 4.10.2. Melhorias de Médio Prazo (3-6 meses)
-
-| Prioridade | Melhoria | Benefício | Esforço |
-|------------|----------|-----------|---------|
-| 🟡 Média | Sistema de detecção de anomalias com ML | Detecção proativa de ataques | Alto |
-| 🟡 Média | Implementar honeypots | Identificação precoce de atacantes | Médio |
-| 🟢 Baixa | Certificação ISO 27001 | Conformidade e credibilidade | Muito Alto |
-
-### 4.10.3. Melhorias de Longo Prazo (6-12 meses)
-
-| Prioridade | Melhoria | Benefício | Esforço |
-|------------|----------|-----------|---------|
-| 🟡 Média | Zero Trust Architecture | Segurança máxima entre todos os componentes | Muito Alto |
-| 🟢 Baixa | Bug bounty program | Identificação de vulnerabilidades por comunidade | Médio |
-| 🟢 Baixa | Disaster recovery em multi-região | Alta disponibilidade e resiliência | Muito Alto |
-
----
-
-## 4.11. Conclusões
-
-### 4.11.1. Postura de Segurança Atual
+### 4.9.1. Postura de Segurança Atual
 
 ✅ **Satisfatória:** O sistema NEFARM-AI, após implementação das mitigações, apresenta uma postura de segurança adequada para o contexto de uso acadêmico e pesquisa.
 
@@ -279,27 +187,18 @@ A aceitação dos riscos residuais está condicionada a:
 - ⚠️ **1 risco médio** identificado e sob monitoramento
 - ✅ **19 riscos baixos** com controles adequados
 
-### 4.11.2. Principais Conquistas
+### 4.9.2. Principais Conquistas
 
 1. ✅ **Redução de 77% no risco total** do sistema
 2. ✅ **Eliminação completa** de todas as ameaças críticas
-3. ✅ **Implementação de defesa em profundidade** com múltiplas camadas
-4. ✅ **Estabelecimento de monitoramento contínuo** e resposta a incidentes
-5. ✅ **Documentação completa** do processo de modelagem de ameaças
+3. ✅ **Documentação completa** do processo de modelagem de ameaças
 
 ### 4.11.3. Próximos Passos
 
 1. 📅 **Implementar plano de monitoramento:** Configurar métricas e alertas definidos
 2. 📊 **Dashboard de segurança:** Criar visualização em tempo real dos KPIs
-3. 📚 **Treinamento da equipe:** Capacitar desenvolvedores em práticas seguras
-4. 🔄 **Primeira revisão semestral:** Agendar para 6 meses após implementação
-5. 🧪 **Teste de penetração:** Contratar pentester para validação independente
 
 ### 4.11.4. Mensagem Final
-
-A modelagem de ameaças é um **processo contínuo**, não um evento único. À medida que o sistema evolui, novas funcionalidades são adicionadas e o cenário de ameaças muda, esta documentação deve ser revisitada e atualizada.
-
-A segurança é responsabilidade de **toda a equipe**, e a cultura de segurança deve ser incorporada em todas as fases do desenvolvimento (Security by Design).
 
 ---
 
