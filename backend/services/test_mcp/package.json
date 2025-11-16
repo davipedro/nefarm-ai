@@ -1,0 +1,13 @@
+{
+  "name": "test-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server de Teste Simples",
+  "type": "module",
+  "main": "mcp_server_test.js",
+  "scripts": {
+    "start": "node mcp_server_test.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}

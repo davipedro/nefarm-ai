@@ -19,6 +19,11 @@
       "command": "node",
       "args": ["../src/ia_local/mcp_server.js"],
       "env": {}
+    },
+    "test-mcp": {
+      "command": "node",
+      "args": ["C:/projetos/nefarm-ai/backend/services/test_mcp/mcp_server_test.js"],
+      "env": {}
     }
   }
 }
