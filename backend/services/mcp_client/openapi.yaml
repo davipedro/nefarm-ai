@@ -1,0 +1,471 @@
+openapi: 3.0.3
+info:
+  title: MCP Orchestrator API
+  description: |
+    API do Orquestrador MCP que gerencia múltiplos servidores MCP e usa o Gemini para decidir qual ferramenta usar.
+
+    ## Tratamento de Erros
+
+    Todos os erros seguem um formato padronizado com códigos específicos que indicam:
+    - **code**: Código único do erro (ex: `GEMINI_OVERLOADED`)
+    - **message**: Mensagem descritiva
+    - **retryable**: Se o cliente deve retentar (true/false)
+    - **retryAfter**: Tempo em segundos para esperar antes de retentar (quando aplicável)
+
+    ## Códigos de Erro Possíveis
+
+    ### Erros de Validação (4xx)
+    - `MISSING_QUERY`: Campo 'query' não fornecido
+    - `MISSING_PARAMETERS`: Campos obrigatórios ausentes
+    - `INVALID_JSON`: JSON mal formatado
+    - `ROUTE_NOT_FOUND`: Endpoint não existe
+    - `SERVER_NOT_FOUND`: Servidor MCP especificado não existe
+
+    ### Erros do Gemini (5xx - retryable)
+    - `GEMINI_OVERLOADED`: Modelo sobrecarregado (503) - retry após 10s
+    - `GEMINI_RATE_LIMIT`: Limite de requisições atingido (429) - retry após 60s
+    - `GEMINI_UNAVAILABLE`: Serviço indisponível (503) - retry após 30s
+    - `GEMINI_PARSE_ERROR`: Erro ao interpretar resposta (500) - retry após 5s
+
+    ### Erros de Execução (5xx)
+    - `ORCHESTRATOR_NOT_INITIALIZED`: Serviço não inicializado (503)
+    - `TOOL_EXECUTION_FAILED`: Erro ao executar ferramenta (500)
+    - `INTERNAL_ERROR`: Erro interno genérico (500)
+
+  version: 1.0.0
+  contact:
+    name: API Support
+servers:
+  - url: http://localhost:3000
+    description: Servidor local de desenvolvimento
+
+paths:
+  /health:
+    get:
+      summary: Health Check
+      description: Verifica o status do servidor e do orquestrador
+      operationId: getHealth
+      tags:
+        - System
+      responses:
+        '200':
+          description: Servidor operacional
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2025-01-15T10:30:00.000Z"
+                  orchestrator:
+                    type: string
+                    enum: [connected, disconnected]
+                    example: connected
+
+  /tools:
+    get:
+      summary: Lista ferramentas disponíveis
+      description: Retorna todas as ferramentas de todos os servidores MCP conectados
+      operationId: listTools
+      tags:
+        - Tools
+      responses:
+        '200':
+          description: Lista de ferramentas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tools:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tool'
+                  total:
+                    type: integer
+                    example: 3
+        '503':
+          $ref: '#/components/responses/OrchestratorNotInitialized'
+
+  /query:
+    post:
+      summary: Processa uma consulta em linguagem natural
+      description: |
+        Usa o Gemini para interpretar a consulta do usuário, decidir qual ferramenta usar e executá-la automaticamente.
+
+        **Fluxo:**
+        1. Gemini analisa a consulta
+        2. Decide qual ferramenta e servidor usar
+        3. Extrai os argumentos necessários
+        4. Executa a ferramenta
+        5. Retorna o resultado
+      operationId: processQuery
+      tags:
+        - Query
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  description: Consulta em linguagem natural
+                  example: "buscar artigos sobre COVID-19"
+            examples:
+              buscarArtigos:
+                summary: Buscar artigos científicos
+                value:
+                  query: "buscar artigos sobre diabetes treatment"
+              extrairFiguras:
+                summary: Extrair figuras de um artigo
+                value:
+                  query: "extrair figuras do PMC9423874 e baixar as imagens"
+      responses:
+        '200':
+          description: Consulta processada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuerySuccessResponse'
+              examples:
+                success:
+                  summary: Execução bem-sucedida
+                  value:
+                    success: true
+                    timestamp: "2025-01-15T10:30:00.000Z"
+                    query: "buscar artigos sobre COVID-19"
+                    decision:
+                      tool_name: "search_articles"
+                      server_name: "pmc-mcp"
+                      arguments:
+                        query: "COVID-19"
+                        max_results: 10
+                      reasoning: "Usuário quer buscar artigos científicos"
+                    result:
+                      - type: "text"
+                        text: "📚 Encontrados 10 artigos..."
+        '400':
+          $ref: '#/components/responses/MissingQuery'
+        '429':
+          $ref: '#/components/responses/GeminiRateLimit'
+        '500':
+          $ref: '#/components/responses/ToolExecutionFailed'
+        '503':
+          description: Gemini sobrecarregado ou orquestrador não inicializado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                geminiOverloaded:
+                  $ref: '#/components/examples/GeminiOverloaded'
+                orchestratorNotInit:
+                  $ref: '#/components/examples/OrchestratorNotInitialized'
+
+  /execute:
+    post:
+      summary: Executa uma ferramenta específica diretamente
+      description: |
+        Executa uma ferramenta MCP sem usar o Gemini para decisão.
+        Útil quando você já sabe qual ferramenta e argumentos usar.
+      operationId: executeTool
+      tags:
+        - Tools
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - server_name
+                - tool_name
+              properties:
+                server_name:
+                  type: string
+                  description: Nome do servidor MCP
+                  example: "pmc-mcp"
+                tool_name:
+                  type: string
+                  description: Nome da ferramenta a executar
+                  example: "search_articles"
+                arguments:
+                  type: object
+                  description: Argumentos para a ferramenta
+                  example:
+                    query: "COVID-19"
+                    max_results: 5
+            examples:
+              searchArticles:
+                summary: Buscar artigos no PMC
+                value:
+                  server_name: "pmc-mcp"
+                  tool_name: "search_articles"
+                  arguments:
+                    query: "diabetes treatment"
+                    max_results: 5
+              extractFigures:
+                summary: Extrair e baixar figuras
+                value:
+                  server_name: "pmc-mcp"
+                  tool_name: "extract_figures"
+                  arguments:
+                    pmcid: "PMC9423874"
+                    download_images: true
+                    images_dir: "imagens_pmc"
+      responses:
+        '200':
+          description: Ferramenta executada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecuteSuccessResponse'
+        '400':
+          $ref: '#/components/responses/MissingParameters'
+        '404':
+          $ref: '#/components/responses/ServerNotFound'
+        '500':
+          $ref: '#/components/responses/ToolExecutionFailed'
+        '503':
+          $ref: '#/components/responses/OrchestratorNotInitialized'
+
+components:
+  schemas:
+    Tool:
+      type: object
+      properties:
+        serverName:
+          type: string
+          example: "pmc-mcp"
+        name:
+          type: string
+          example: "search_articles"
+        description:
+          type: string
+          example: "Busca artigos científicos no Europe PMC"
+        inputSchema:
+          type: object
+          description: JSON Schema dos parâmetros da ferramenta
+
+    QuerySuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        timestamp:
+          type: string
+          format: date-time
+        query:
+          type: string
+          example: "buscar artigos sobre COVID-19"
+        decision:
+          type: object
+          properties:
+            tool_name:
+              type: string
+              example: "search_articles"
+            server_name:
+              type: string
+              example: "pmc-mcp"
+            arguments:
+              type: object
+            reasoning:
+              type: string
+              example: "Detectei intenção de busca de artigos"
+        result:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                example: "text"
+              text:
+                type: string
+
+    ExecuteSuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        timestamp:
+          type: string
+          format: date-time
+        server_name:
+          type: string
+          example: "pmc-mcp"
+        tool_name:
+          type: string
+          example: "search_articles"
+        result:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                example: "text"
+              text:
+                type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: "GEMINI_OVERLOADED"
+            message:
+              type: string
+              example: "O modelo Gemini está sobrecarregado. Tente novamente em alguns instantes."
+            retryable:
+              type: boolean
+              example: true
+            retryAfter:
+              type: integer
+              description: Tempo em segundos para esperar antes de retentar
+              example: 10
+            timestamp:
+              type: string
+              format: date-time
+            query:
+              type: string
+              description: Query original (quando aplicável)
+
+  examples:
+    GeminiOverloaded:
+      summary: Gemini sobrecarregado
+      value:
+        success: false
+        error:
+          code: "GEMINI_OVERLOADED"
+          message: "O modelo Gemini está sobrecarregado. Tente novamente em alguns instantes."
+          retryable: true
+          retryAfter: 10
+          timestamp: "2025-01-15T10:30:00.000Z"
+          query: "buscar artigos sobre COVID-19"
+
+    OrchestratorNotInitialized:
+      summary: Orquestrador não inicializado
+      value:
+        success: false
+        error:
+          code: "ORCHESTRATOR_NOT_INITIALIZED"
+          message: "Orquestrador não inicializado"
+          retryable: true
+          retryAfter: 5
+          timestamp: "2025-01-15T10:30:00.000Z"
+
+  responses:
+    MissingQuery:
+      description: Campo 'query' obrigatório não fornecido
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Campo 'query' é obrigatório"
+
+    MissingParameters:
+      description: Campos obrigatórios ausentes
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Campos 'server_name' e 'tool_name' são obrigatórios"
+
+    OrchestratorNotInitialized:
+      description: Orquestrador não está inicializado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: "ORCHESTRATOR_NOT_INITIALIZED"
+              message: "Orquestrador não inicializado"
+              retryable: true
+              retryAfter: 5
+              timestamp: "2025-01-15T10:30:00.000Z"
+
+    ServerNotFound:
+      description: Servidor MCP não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: "SERVER_NOT_FOUND"
+              message: "Servidor MCP não encontrado"
+              retryable: false
+              timestamp: "2025-01-15T10:30:00.000Z"
+            errorDetails:
+              serverName: "invalid-server"
+              availableServers: ["pmc-mcp", "ia-local-classifier", "test-mcp"]
+
+    GeminiRateLimit:
+      description: Limite de requisições do Gemini atingido
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: "GEMINI_RATE_LIMIT"
+              message: "Limite de requisições do Gemini atingido"
+              retryable: true
+              retryAfter: 60
+              timestamp: "2025-01-15T10:30:00.000Z"
+              query: "buscar artigos sobre COVID-19"
+
+    ToolExecutionFailed:
+      description: Erro ao executar a ferramenta
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: "TOOL_EXECUTION_FAILED"
+              message: "Erro ao executar ferramenta"
+              retryable: true
+              retryAfter: 3
+              timestamp: "2025-01-15T10:30:00.000Z"
+            errorDetails:
+              serverName: "pmc-mcp"
+              toolName: "search_articles"
+              originalError: "Network timeout"
+
+tags:
+  - name: System
+    description: Endpoints do sistema (health check)
+  - name: Tools
+    description: Gerenciamento e execução de ferramentas MCP
+  - name: Query
+    description: Processamento de consultas em linguagem natural

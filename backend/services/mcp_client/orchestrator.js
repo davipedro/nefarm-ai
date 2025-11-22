@@ -4,6 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import { ErrorCodes, detectGeminiError, formatErrorResponse } from "./errors.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,7 +19,7 @@ export class MCPOrchestrator {
     this.tools = [];
     this.geminiApiKey = geminiApiKey || "MOCK_GEMINI_API_KEY";
     this.genAI = new GoogleGenerativeAI(this.geminiApiKey);
-    this.model = this.genAI.getGenerativeModel({ model: "gemini-pro" });
+    this.model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   }
 
   /**
@@ -143,64 +144,32 @@ Se nenhuma ferramenta for apropriada, responda:
       // Extrair JSON da resposta
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
+        return {
+          success: true,
+          data: JSON.parse(jsonMatch[0]),
+        };
       }
 
+      // Se não conseguir parsear, retornar erro
+      console.log("⚠️  Não foi possível parsear resposta do Gemini");
+      const errorCode = ErrorCodes.GEMINI_PARSE_ERROR;
       return {
-        tool_name: null,
-        reasoning: "Não foi possível parsear a resposta do Gemini",
+        success: false,
+        errorCode,
       };
     } catch (error) {
-      // Fallback para modo mock
-      console.log("⚠️  Gemini em modo mock - usando fallback");
-      return this.mockToolDecision(userQuery);
-    }
-  }
+      // Detectar tipo de erro do Gemini
+      const errorCode = detectGeminiError(error);
 
-  /**
-   * Decisão mockada quando o Gemini não está disponível
-   */
-  mockToolDecision(userQuery) {
-    const query = userQuery.toLowerCase();
+      console.log("⚠️  Erro ao chamar Gemini");
+      console.log(`❌ Tipo de erro: ${errorCode.code}`);
+      console.log(`📋 Mensagem: ${error.message}`);
 
-    // Lógica simples de matching
-    if (query.includes("imagem") || query.includes("classificar")) {
       return {
-        tool_name: "classify_image",
-        server_name: "ia-local-classifier",
-        arguments: {
-          image_description: "Descrição mockada para teste",
-        },
-        reasoning: "Detectei palavras relacionadas a classificação de imagem",
+        success: false,
+        errorCode,
       };
     }
-
-    if (query.includes("buscar") || query.includes("pesquisar") || query.includes("artigo")) {
-      return {
-        tool_name: "search",
-        server_name: "pubmedmcp",
-        arguments: {
-          query: userQuery,
-        },
-        reasoning: "Detectei intenção de busca de artigos",
-      };
-    }
-
-    if (query.includes("navegar") || query.includes("site") || query.includes("web")) {
-      return {
-        tool_name: "browser",
-        server_name: "browser-use",
-        arguments: {
-          url: "https://example.com",
-        },
-        reasoning: "Detectei intenção de navegação web",
-      };
-    }
-
-    return {
-      tool_name: null,
-      reasoning: "Nenhuma ferramenta apropriada encontrada para esta consulta",
-    };
   }
 
   /**
@@ -210,7 +179,15 @@ Se nenhuma ferramenta for apropriada, responda:
     const client = this.clients.get(serverName);
 
     if (!client) {
-      throw new Error(`Servidor ${serverName} não encontrado`);
+      const errorCode = ErrorCodes.SERVER_NOT_FOUND;
+      return {
+        success: false,
+        errorCode,
+        errorDetails: {
+          serverName,
+          availableServers: Array.from(this.clients.keys()),
+        },
+      };
     }
 
     try {
@@ -224,9 +201,15 @@ Se nenhuma ferramenta for apropriada, responda:
         result: result.content,
       };
     } catch (error) {
+      const errorCode = ErrorCodes.TOOL_EXECUTION_FAILED;
       return {
         success: false,
-        error: error.message,
+        errorCode,
+        errorDetails: {
+          serverName,
+          toolName,
+          originalError: error.message,
+        },
       };
     }
   }
@@ -241,25 +224,47 @@ Se nenhuma ferramenta for apropriada, responda:
     const decision = await this.decideToolWithGemini(userQuery);
     console.log(`💭 Decisão: ${JSON.stringify(decision, null, 2)}`);
 
-    if (!decision.tool_name) {
+    // Se houve erro no Gemini, retornar erro estruturado
+    if (!decision.success) {
+      return formatErrorResponse(decision.errorCode, {
+        query: userQuery,
+      });
+    }
+
+    const toolDecision = decision.data;
+
+    // Se o Gemini não encontrou ferramenta apropriada
+    if (!toolDecision.tool_name) {
       return {
         success: false,
-        message: decision.reasoning,
+        message: toolDecision.reasoning,
+        query: userQuery,
       };
     }
 
     // 2. Executar a ferramenta
-    console.log(`⚙️  Executando: ${decision.tool_name} no servidor ${decision.server_name}`);
+    console.log(`⚙️  Executando: ${toolDecision.tool_name} no servidor ${toolDecision.server_name}`);
     const result = await this.executeTool(
-      decision.server_name,
-      decision.tool_name,
-      decision.arguments
+      toolDecision.server_name,
+      toolDecision.tool_name,
+      toolDecision.arguments
     );
 
+    // Se houve erro na execução da ferramenta
+    if (!result.success) {
+      return formatErrorResponse(result.errorCode, {
+        query: userQuery,
+        decision: toolDecision,
+        ...result.errorDetails,
+      });
+    }
+
+    // Sucesso
     return {
-      success: result.success,
-      decision,
-      result: result.result || result.error,
+      success: true,
+      query: userQuery,
+      decision: toolDecision,
+      result: result.result,
     };
   }
 

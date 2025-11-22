@@ -1,9 +1,16 @@
+import "dotenv/config";
 import http from "http";
 import { MCPOrchestrator } from "./orchestrator.js";
+import { ErrorCodes, formatErrorResponse } from "./errors.js";
 
 // Configurações
 const PORT = process.env.PORT || 3000;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "MOCK_GEMINI_API_KEY";
+if (process.env.GEMINI_API_KEY) {
+  console.log("chave encontrada");
+} else {
+  console.log("chave não definida");
+}
 
 // Instância do orquestrador
 let orchestrator = null;
@@ -48,6 +55,7 @@ function sendJSON(res, statusCode, data) {
  * Roteador principal
  */
 async function handleRequest(req, res) {
+  console.log('[index.js - handleRequest] request: ', req);
   const { method, url } = req;
 
   // CORS preflight
@@ -103,8 +111,11 @@ async function handleRequest(req, res) {
 
       const result = await orchestrator.processQuery(body.query);
 
-      sendJSON(res, 200, {
-        query: body.query,
+      // Extrair httpStatus (para uso interno) e remover da resposta
+      const httpStatus = result.httpStatus || (result.success ? 200 : 500);
+      delete result.httpStatus; // Não enviar ao cliente
+
+      sendJSON(res, httpStatus, {
         timestamp: new Date().toISOString(),
         ...result,
       });
@@ -135,7 +146,23 @@ async function handleRequest(req, res) {
         body.arguments || {}
       );
 
-      sendJSON(res, 200, {
+      // Determinar HTTP status code
+      let httpStatus = 200;
+      if (!result.success && result.errorCode) {
+        httpStatus = result.errorCode.httpStatus;
+        // Formatar erro se ainda não foi formatado
+        if (!result.error) {
+          const formatted = formatErrorResponse(result.errorCode, result.errorDetails || {});
+          Object.assign(result, formatted);
+        }
+      }
+
+      // Remover campos internos
+      delete result.errorCode;
+      delete result.errorDetails;
+      delete result.httpStatus;
+
+      sendJSON(res, httpStatus, {
         server_name: body.server_name,
         tool_name: body.tool_name,
         timestamp: new Date().toISOString(),
