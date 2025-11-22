@@ -1,20 +1,5 @@
 {
   "mcpServers": {
-    "browser-use": {
-      "command": "uvx",
-      "args": ["browser-use", "--mcp"],
-      "env": {
-        "OPENAI_API_KEY": "your-openai-api-key-here"
-      }
-    },
-    "pubmedmcp": {
-        "command": "uvx",
-        "args": ["pubmedmcp@latest"],
-        "env": {
-            "UV_PRERELEASE": "allow",
-            "UV_PYTHON": "3.12"
-        }
-    },
     "ia-local-classifier": {
       "command": "node",
       "args": ["../src/ia_local/mcp_server.js"],
@@ -23,6 +8,11 @@
     "test-mcp": {
       "command": "node",
       "args": ["C:/projetos/nefarm-ai/backend/services/test_mcp/mcp_server_test.js"],
+      "env": {}
+    },
+    "pmc-mcp": {
+      "command": "python",
+      "args": ["../pmc_mcp/mcp_server.py"],
       "env": {}
     }
   }
