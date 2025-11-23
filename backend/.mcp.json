@@ -11,8 +11,13 @@
       "env": {}
     },
     "pmc-mcp": {
-      "command": "python",
-      "args": ["../pmc_mcp/mcp_server.py"],
+      "command": "node",
+      "args": ["../pmc_mcp/mcp_server.js"],
+      "env": {}
+    },
+    "browser-use": {
+      "command": "node",
+      "args": ["services/mcp_browse_use/mcp_server.js"],
       "env": {}
     }
   }

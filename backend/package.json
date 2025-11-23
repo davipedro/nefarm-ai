@@ -1,16 +1,29 @@
 {
   "name": "backend",
   "version": "1.0.0",
+  "description": "Backend com MCP Orchestrator e serviços",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:orchestrator": "node services/mcp_client/index.js",
+    "dev:orchestrator": "node --watch services/mcp_client/index.js",
+    "start:test-mcp": "node services/test_mcp/mcp_server_test.js",
+    "start:pmc-mcp": "node services/pmc_mcp/mcp_server.js",
+    "start:browser-use": "node services/mcp_browse_use/mcp_server.js"
   },
-  "keywords": [],
+  "keywords": [
+    "mcp",
+    "orchestrator",
+    "gemini"
+  ],
   "author": "",
-  "license": "ISC",
-  "description": "",
+  "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0"
+    "@google/generative-ai": "^0.21.0",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "cheerio": "^1.0.0",
+    "dotenv": "^17.2.3"
   },
   "engines": {
     "node": ">=18.0.0"
