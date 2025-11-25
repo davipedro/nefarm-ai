@@ -6,8 +6,8 @@ config:
 flowchart TD
     A["Front end"] <--> B@{ label: "<span style=\"color:\">+ MCP Solicitador (IA Externa)</span>" }
     B <--> n1@{ label: "<span style=\"color:\" data-darkreader-inline-color=\"\">PMC MCP Busca/Extração Artigos</span>" }
-    n2@{ label: "<span style=\"color:\" data-darkreader-inline-color=\"\">IA Local Classificação de gráficos por legenda</span>" } <--> B
-    n3@{ label: "<span style=\"color:\" data-darkreader-inline-color=\"\">Browser Use MCP Automação Web</span>" } <--> B
+    n2@{ label: "<span style=\"color:\" data-darkreader-inline-color=\"\">IA Local Classificação de gráficos</span>" } <--> B
+    n3@{ label: "<span style=\"color:\" data-darkreader-inline-color=\"\">Graph Extractor MCP Extração de Dados</span>" } <--> B
     B@{ shape: rect}
     n1@{ shape: rect}
     n2@{ shape: rect}

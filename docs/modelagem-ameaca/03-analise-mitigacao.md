@@ -53,8 +53,8 @@ config:
 ---
 flowchart TD
     n1@{ label: "<span style='color:' data-darkreader-inline-color=''>PMC MCP Busca/Extração Artigos</span>" } <--> B@{ label: "<span style='color:'>+ MCP Solicitador (IA Externa)</span>" }
-    n2@{ label: "<span style='color:' data-darkreader-inline-color=''>IA Local Classificação de gráficos por legenda</span>" } <--> B
-    n3@{ label: "<span style='color:' data-darkreader-inline-color=''>Browser Use MCP Automação Web</span>" } <--> B
+    n2@{ label: "<span style='color:' data-darkreader-inline-color=''>IA Local Classificação de gráficos</span>" } <--> B
+    n3@{ label: "<span style='color:' data-darkreader-inline-color=''>Graph Extractor MCP Extração de Dados</span>" } <--> B
     n4@{ label: "<span style='color:' data-darkreader-inline-color=''>API Gateway</span>" } <--> B & A["Front end"]
     n1@{ shape: rect}
     B@{ shape: rect}
@@ -128,9 +128,9 @@ flowchart TD
 
 | Componente | Medida Implementada |
 |------------|---------------------|
-| **IA Local (ID 17)** | Modelos assinados digitalmente. Validação de hash antes de carregamento. Backup periódico de modelos. |
-| **Browser Use MCP (ID 19)** | Sessões de automação isoladas. Cookies e tokens armazenados em memória efêmera. Limpeza automática após uso. |
-| **Ambiente Docker (ID 20)** | Imagens base verificadas e assinadas. Scan de vulnerabilidades automatizado (Trivy). Princípio de least privilege em volumes e redes. |
+| **IA Local (ID 14)** | Modelos assinados digitalmente. Validação de hash antes de carregamento. Backup periódico de modelos. |
+| **Graph Extractor MCP (ID 16)** | Validação de dados extraídos. Sanitização de outputs. Limites de processamento por requisição. |
+| **Ambiente Docker (ID 17)** | Imagens base verificadas e assinadas. Scan de vulnerabilidades automatizado (Trivy). Princípio de least privilege em volumes e redes. |
 
 ---
 
@@ -160,11 +160,8 @@ flowchart TD
 | **13** | MCP Solicitador | Info Disclosure | **100** 🟡 | **25** 🟢 | **75%** | ✅ MITIGADA |
 | **14** | IA Local | Elev. Privilege | **75** 🟡 | **25** 🟢 | **67%** | ✅ MITIGADA |
 | **15** | MCP Solicitador | Elev. Privilege | **75** 🟡 | **25** 🟢 | **67%** | ✅ MITIGADA |
-| **16** | Frontend | Tampering | **50** 🟢 | **25** 🟢 | **50%** | ✅ MITIGADA |
-| **17** | IA Local | Tampering | **50** 🟢 | **25** 🟢 | **50%** | ✅ MITIGADA |
-| **18** | Comunicação | Denial of Service | **50** 🟢 | **25** 🟢 | **50%** | ✅ MITIGADA |
-| **19** | Browser Use MCP | Info Disclosure | **50** 🟢 | **25** 🟢 | **50%** | ✅ MITIGADA |
-| **20** | Ambiente Docker | Elev. Privilege | **50** 🟢 | **25** 🟢 | **50%** | ✅ MITIGADA |
+| **16** | Graph Extractor MCP | Tampering | **50** 🟢 | **25** 🟢 | **50%** | ✅ MITIGADA |
+| **17** | Ambiente Docker | Elev. Privilege | **50** 🟢 | **25** 🟢 | **50%** | ✅ MITIGADA |
 
 ---
 

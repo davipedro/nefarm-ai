@@ -25,8 +25,8 @@ Cada **MCP** executa uma função específica e independente, sendo acionado con
 | **Frontend**               | Interface de interação com o usuário, responsável por enviar solicitações e exibir resultados. | React                      |
 | **MCP Solicitador (IA Externa)** | Atua como orquestrador central, recebendo as requisições do frontend e distribuindo as tarefas aos MCPs especializados. | Python/IA Externa |
 | **PMC MCP**                | Executa buscas e extração de artigos científicos em repositórios externos (ex.: PubMed Central). | Python                     |
-| **IA Local**               | Modelo de visão computacional baseado em **MobileNetV2**, utilizado para classificar e identificar tipos de gráficos científicos por legenda. | Python |
-| **Browser Use MCP**        | Realiza automações web e coleta de dados complementares em páginas externas. | Python |
+| **IA Local**               | Modelo de IA baseado em **Ollama (llama3:8b)**, utilizado para classificar e identificar se imagens são gráficos científicos. | Python |
+| **Graph Extractor MCP**    | Serviço especializado para extração de dados numéricos de gráficos científicos. | Python |
 | **Ambiente Docker**        | Contêineriza todos os serviços, facilitando a execução local e a comunicação entre módulos. | Docker Compose              |
 
 ### 1.2.3. Diagrama de Arquitetura Inicial
@@ -40,8 +40,8 @@ config:
 flowchart TD
     A["Front end"] <--> B@{ label: "<span style='color:'>+ MCP Solicitador (IA Externa)</span>" }
     B <--> n1@{ label: "<span style='color:' data-darkreader-inline-color=''>PMC MCP Busca/Extração Artigos</span>" }
-    n2@{ label: "<span style='color:' data-darkreader-inline-color=''>IA Local Classificação de gráficos por legenda</span>" } <--> B
-    n3@{ label: "<span style='color:' data-darkreader-inline-color=''>Browser Use MCP Automação Web</span>" } <--> B
+    n2@{ label: "<span style='color:' data-darkreader-inline-color=''>IA Local Classificação de gráficos</span>" } <--> B
+    n3@{ label: "<span style='color:' data-darkreader-inline-color=''>Graph Extractor MCP Extração de Dados</span>" } <--> B
     B@{ shape: rect}
     n1@{ shape: rect}
     n2@{ shape: rect}
@@ -58,8 +58,8 @@ flowchart TD
 2. **Frontend** envia requisição HTTP diretamente ao **MCP Solicitador**
 3. **MCP Solicitador** analisa a requisição e distribui tarefas:
    - Envia solicitação ao **PMC MCP** para buscar artigos no PubMed Central
-   - Aciona **Browser Use MCP** para automação web complementar
    - Comunica-se com **IA Local** para classificação de gráficos
+   - Aciona **Graph Extractor MCP** para extração de dados numéricos de gráficos
 4. Cada **MCP** processa sua tarefa e retorna resultados ao **MCP Solicitador**
 5. **MCP Solicitador** consolida as respostas
 6. **Frontend** recebe e exibe os resultados ao usuário
@@ -71,14 +71,13 @@ Para a modelagem de ameaças, identificamos os seguintes elementos:
 - **Entidades Externas:**
   - Usuário
   - Repositórios externos (PubMed Central)
-  - Websites para automação
 
 - **Processos:**
   - Frontend (React)
   - MCP Solicitador (Orquestrador)
   - PMC MCP (Extração de artigos)
   - IA Local (Classificação de gráficos)
-  - Browser Use MCP (Automação web)
+  - Graph Extractor MCP (Extração de dados)
 
 - **Fluxos de Dados:**
   - Frontend ↔ MCP Solicitador

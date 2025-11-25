@@ -5,8 +5,8 @@ config:
 ---
 flowchart TD
     n1@{ label: "<span style=\"color:\" data-darkreader-inline-color=\"\">PMC MCP Busca/Extração Artigos</span>" } <--> B@{ label: "<span style=\"color:\">+ MCP Solicitador (IA Externa)</span>" }
-    n2@{ label: "<span style=\"color:\" data-darkreader-inline-color=\"\">IA Local Classificação de gráficos por legenda</span>" } <--> B
-    n3@{ label: "<span style=\"color:\" data-darkreader-inline-color=\"\">Browser Use MCP Automação Web</span>" } <--> B
+    n2@{ label: "<span style=\"color:\" data-darkreader-inline-color=\"\">IA Local Classificação de gráficos</span>" } <--> B
+    n3@{ label: "<span style=\"color:\" data-darkreader-inline-color=\"\">Graph Extractor MCP Extração de Dados</span>" } <--> B
     n4@{ label: "<span style=\"color:\" data-darkreader-inline-color=\"\">API Gateway</span>" } <--> B & A["Front end"]
     n1@{ shape: rect}
     B@{ shape: rect}

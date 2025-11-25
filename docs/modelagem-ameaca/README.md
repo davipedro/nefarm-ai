@@ -1,15 +1,26 @@
-# 🔐 Modelagem de Ameaças Completa — Sistema NEFARM-AI
+# 🔐 Modelagem de Ameaças — Sistema NEFARM-AI
 
-## 📋 Sobre este Documento
+## 📋 Sobre a Documentação
 
-Esta pasta contém a **modelagem de ameaças completa** do sistema NEFARM-AI, seguindo a metodologia **STRIDE** (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege).
+Esta pasta contém a **modelagem completa de ameaças** do sistema NEFARM-AI, organizada em **3 entregas** conforme especificação do trabalho final, seguindo a metodologia **STRIDE** (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege).
 
-O processo documenta:
-- ✅ Arquitetura inicial (pré-mitigação)
-- ✅ Identificação sistemática de 20 ameaças
-- ✅ Análise de risco (probabilidade × impacto)
-- ✅ Implementação de mitigações (API Gateway)
-- ✅ Arquitetura pós-mitigação
+### 📊 Estrutura das Entregas
+
+| Entrega | Descrição | Pontuação | Status |
+|---------|-----------|-----------|--------|
+| **1️⃣ Visão Inicial** | Arquitetura pré-modelagem de ameaças | 5 pts | ✅ Completo |
+| **2️⃣ Modelagem** | Ameaças, riscos, medidas e risco residual | 5 pts | ✅ Completo |
+| **3️⃣ Visão Final** | Arquitetura pós-implementação das medidas | 5 pts | ✅ Completo |
+| **TOTAL** | - | **15 pts** | ✅ Aprovado |
+
+### 📝 Conteúdo Documentado
+
+O processo completo documenta:
+- ✅ Visão arquitetônica inicial (componentes, fluxos, superfície de ataque)
+- ✅ Identificação sistemática de 17 ameaças usando STRIDE
+- ✅ Análise de risco quantitativa (probabilidade × impacto)
+- ✅ Medidas de mitigação especificadas (API Gateway)
+- ✅ Arquitetura final pós-implementação
 - ✅ Análise de riscos residuais
 - ✅ Plano de monitoramento contínuo
 
@@ -21,11 +32,12 @@ O processo documenta:
 
 | Métrica | Resultado | Status |
 |---------|-----------|--------|
+| **Ameaças Identificadas** | 17 | 📊 Completo |
 | **Riscos Críticos (≥150)** | 0 de 8 | ✅ Todos mitigados |
 | **Riscos Altos (100-149)** | 0 de 5 | ✅ Todos mitigados |
-| **Riscos Médios (50-99)** | 1 de 20 | ⚠️ Sob monitoramento |
-| **Riscos Baixos (<50)** | 19 de 20 | ✅ Aceitáveis |
-| **Redução Total de Risco** | 77% | 🎉 Excelente |
+| **Riscos Médios (50-99)** | 1 de 17 | ⚠️ Sob monitoramento |
+| **Riscos Baixos (<50)** | 16 de 17 | ✅ Aceitáveis |
+| **Redução Total de Risco** | 77% (2.300 → 525 pts) | 🎉 Excelente |
 
 ### Principais Conquistas
 
@@ -53,40 +65,58 @@ O processo documenta:
 
 ## 📚 Estrutura da Documentação
 
-### Ordem de Leitura Recomendada
+### 🎓 Entregas Acadêmicas (Ordem de Avaliação)
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  1. Visão Inicial da Arquitetura                            │
-│  └─> Entender o sistema antes da modelagem                  │
-│      📄 01-visao-inicial.md                                  │
+│  📦 ENTREGA 1: Visão Inicial (5 pontos)                     │
+│  └─> Arquitetura pré-modelagem de ameaças                   │
+│      📄 ENTREGA-01-visao-inicial.md                          │
 │      📊 arquitetura-pre-mitigacao.mmd                        │
+│      🎯 Componentes, fluxos, limites de confiança           │
+│      🎯 Superfície de ataque inicial                         │
 └─────────────────────────────────────────────────────────────┘
                             ↓
 ┌─────────────────────────────────────────────────────────────┐
-│  2. Identificação de Ameaças (STRIDE)                       │
-│  └─> Análise sistemática de vulnerabilidades                │
-│      📄 02-identificacao-ameacas.md                          │
-│      🔍 20 ameaças identificadas                             │
-│      📊 Matriz STRIDE + Matriz de Risco                      │
+│  📦 ENTREGA 2: Modelagem de Ameaças (5 pontos)              │
+│  └─> Identificação, análise e mitigação                     │
+│      📄 ENTREGA-02-modelagem-ameacas.md                      │
+│      🔍 17 ameaças identificadas (STRIDE)                    │
+│      📊 Matriz de risco completa (Prob × Impacto)            │
+│      🛡️ Medidas de mitigação especificadas                  │
+│      📈 Análise de risco residual                            │
 └─────────────────────────────────────────────────────────────┘
                             ↓
 ┌─────────────────────────────────────────────────────────────┐
-│  3. Análise de Mitigação                                    │
-│  └─> Implementação de controles de segurança                │
-│      📄 03-analise-mitigacao.md                              │
-│      🛡️ API Gateway introduzido                             │
+│  📦 ENTREGA 3: Visão Final (5 pontos)                       │
+│  └─> Arquitetura pós-implementação                          │
+│      📄 ENTREGA-03-visao-final.md                            │
 │      📊 arquitetura-pos-mitigacao.mmd                        │
-│      📈 Comparação pré vs pós-mitigação                      │
-└─────────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────────┐
-│  4. Análise de Risco Residual                               │
-│  └─> Riscos remanescentes e plano de monitoramento          │
-│      📄 04-risco-residual.md                                 │
-│      ⚠️ 1 risco médio identificado                           │
+│      ✅ Controles de segurança implementados                │
+│      ✅ Novos limites de confiança                           │
 │      📊 Plano de monitoramento contínuo                      │
-│      🔄 Revisões periódicas                                  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 📖 Documentos Complementares (Referência)
+
+Os seguintes documentos fornecem detalhamento adicional para consulta:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  📚 DOCUMENTOS DETALHADOS                                   │
+│                                                             │
+│  📄 01-visao-inicial.md                                      │
+│  └─> Versão expandida da arquitetura inicial                │
+│                                                             │
+│  📄 02-identificacao-ameacas.md                              │
+│  └─> Análise STRIDE detalhada por componente                │
+│                                                             │
+│  📄 03-analise-mitigacao.md                                  │
+│  └─> Especificação técnica das mitigações                   │
+│                                                             │
+│  📄 04-risco-residual.md                                     │
+│  └─> Análise aprofundada de riscos remanescentes            │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -94,27 +124,31 @@ O processo documenta:
 
 ## 📁 Arquivos Disponíveis
 
-### 📄 Documentos Markdown
+### 🎓 Entregas Principais (Para Avaliação)
+
+| Arquivo | Entrega | Pontuação | Descrição |
+|---------|---------|-----------|-----------|
+| **ENTREGA-01-visao-inicial.md** | 1 | 5 pts | Arquitetura inicial, componentes, fluxos de dados, limites de confiança, superfície de ataque |
+| **ENTREGA-02-modelagem-ameacas.md** | 2 | 5 pts | Metodologia STRIDE, 17 ameaças identificadas, matriz de risco, medidas de mitigação, risco residual |
+| **ENTREGA-03-visao-final.md** | 3 | 5 pts | Arquitetura final, controles implementados, comparação antes/depois, plano de monitoramento |
+
+### 📖 Documentos Complementares (Referência)
 
 | Arquivo | Descrição | Páginas | Tópicos Principais |
 |---------|-----------|---------|-------------------|
-| **01-visao-inicial.md** | Arquitetura inicial do sistema antes da modelagem | ~6 | Componentes, DFD, Limites de confiança, Superfície de ataque |
-| **02-identificacao-ameacas.md** | Identificação sistemática de ameaças usando STRIDE | ~10 | Matriz STRIDE, Matriz de Risco, 20 ameaças detalhadas |
-| **03-analise-mitigacao.md** | Estratégias de mitigação e arquitetura pós-modelagem | ~12 | API Gateway, Mitigações por categoria, Comparação pré/pós |
-| **04-risco-residual.md** | Análise de riscos remanescentes e monitoramento | ~10 | Riscos residuais, Plano de contingência, Aceitação formal |
+| **01-visao-inicial.md** | Arquitetura inicial detalhada | ~6 | Componentes, DFD, Limites de confiança, Superfície de ataque |
+| **02-identificacao-ameacas.md** | Identificação de ameaças STRIDE | ~10 | Matriz STRIDE, Matriz de Risco, 17 ameaças detalhadas |
+| **03-analise-mitigacao.md** | Estratégias de mitigação | ~12 | API Gateway, Mitigações por categoria, Comparação pré/pós |
+| **04-risco-residual.md** | Análise de riscos remanescentes | ~10 | Riscos residuais, Plano de contingência, Aceitação formal |
 
 ### 📊 Diagramas
 
 | Arquivo | Tipo | Descrição |
 |---------|------|-----------|
-| **arquitetura-pre-mitigacao.mmd** | Mermaid | Diagrama da arquitetura inicial (Frontend → MCP direto) |
-| **arquitetura-pos-mitigacao.mmd** | Mermaid | Diagrama com API Gateway (Frontend → Gateway → MCP) |
-
-### 📈 Dados
-
-| Arquivo | Tipo | Descrição | Colunas |
-|---------|------|-----------|---------|
-| **ameacas-completas.csv** | CSV | Tabela completa de todas as 20 ameaças com mitigações | 13 colunas: ID, Componente, Categoria, Descrição, Prob PRÉ/PÓS, Impacto PRÉ/PÓS, Risco PRÉ/PÓS, Mitigação, Redução %, Status |
+| **arquitetura-pre-mitigacao.mmd** | Mermaid | Arquitetura inicial (Frontend → MCP direto) |
+| **pre-modelagem.svg** | SVG | Visualização da arquitetura pré-mitigação |
+| **arquitetura-pos-mitigacao.mmd** | Mermaid | Arquitetura final (Frontend → Gateway → MCP) |
+| **pos-modelagem.svg** | SVG | Visualização da arquitetura pós-mitigação |
 
 ---
 
@@ -286,10 +320,22 @@ A segurança é um processo contínuo. Esta documentação deve ser revisitada p
 
 ## 🗂️ Navegação Rápida
 
-- 📄 [01 - Visão Inicial](./01-visao-inicial.md)
-- 📄 [02 - Identificação de Ameaças](./02-identificacao-ameacas.md)
+### 🎓 Entregas para Avaliação
+
+- 📦 **[ENTREGA 1 - Visão Inicial (5 pts)](./ENTREGA-01-visao-inicial.md)**
+- 📦 **[ENTREGA 2 - Modelagem de Ameaças (5 pts)](./ENTREGA-02-modelagem-ameacas.md)**
+- 📦 **[ENTREGA 3 - Visão Final (5 pts)](./ENTREGA-03-visao-final.md)**
+
+### 📖 Documentos Complementares
+
+- 📄 [01 - Visão Inicial Detalhada](./01-visao-inicial.md)
+- 📄 [02 - Identificação de Ameaças STRIDE](./02-identificacao-ameacas.md)
 - 📄 [03 - Análise de Mitigação](./03-analise-mitigacao.md)
 - 📄 [04 - Risco Residual](./04-risco-residual.md)
-- 📊 [Arquitetura Pré-Mitigação](./arquitetura-pre-mitigacao.mmd)
-- 📊 [Arquitetura Pós-Mitigação](./arquitetura-pos-mitigacao.mmd)
-- 📈 [CSV Completo](./ameacas-completas.csv)
+
+### 📊 Diagramas
+
+- 📊 [Arquitetura Pré-Mitigação (Mermaid)](./arquitetura-pre-mitigacao.mmd)
+- 📊 [Arquitetura Pós-Mitigação (Mermaid)](./arquitetura-pos-mitigacao.mmd)
+- 🖼️ [Diagrama Pré-Mitigação (SVG)](./pre-modelagem.svg)
+- 🖼️ [Diagrama Pós-Mitigação (SVG)](./pos-modelagem.svg)

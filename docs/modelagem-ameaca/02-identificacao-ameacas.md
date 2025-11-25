@@ -28,7 +28,7 @@ A tabela a seguir detalha as ameaças identificadas em cada componente do sistem
 | **Comunicação (Frontend ↔ MCP)** | Requisições não autenticadas de qualquer cliente. | Interceptação e alteração Man-in-the-Middle (sem HTTPS). | - | Vazamento de dados sensíveis em tráfego não criptografado. | Interrupção da comunicação entre serviços. | - |
 | **PMC MCP** | - | Modificação de resultados de busca antes de retornar. | - | - | - | - |
 | **IA Local** | - | Envenenamento do modelo com dados maliciosos. | - | - | Sobrecarga do modelo com requisições intensas. | Acesso ao contêiner Docker para executar comandos no host. |
-| **Browser Use MCP** | - | Automação manipulada para acessar sites não autorizados. | - | Exposição de cookies e sessões de navegação. | - | Execução de scripts maliciosos via automação. |
+| **Graph Extractor MCP** | - | Manipulação de dados extraídos de gráficos. | - | - | Sobrecarga com requisições de processamento intensivo. | - |
 | **Ambiente Docker** | - | Modificação não autorizada de imagens ou containers. | - | Exposição de variáveis de ambiente e segredos. | Esgotamento de recursos do host. | - |
 
 ---
@@ -75,7 +75,7 @@ A tabela a seguir apresenta uma análise detalhada de cada ameaça identificada,
 | **13** | Frontend | Tampering | Injeção de scripts maliciosos para alterar conteúdo da página | Média (10) | Baixo (5) | **50** 🟢 |
 | **14** | IA Local | Tampering | Envenenamento do modelo - modificação não autorizada dos modelos de IA ou da base de conhecimento | Baixa (5) | Médio (10) | **50** 🟢 |
 | **15** | Comunicação | Denial of Service | Interrupção da comunicação - falhas de rede ou ataques específicos que quebram a comunicação entre serviços | Baixa (5) | Médio (10) | **50** 🟢 |
-| **16** | Browser Use MCP | Information Disclosure | Exposição de sessões - cookies e tokens de sessão da automação web expostos em logs ou memória | Baixa (5) | Médio (10) | **50** 🟢 |
+| **16** | Graph Extractor MCP | Tampering | Manipulação de dados extraídos - alteração maliciosa dos dados numéricos extraídos de gráficos | Baixa (5) | Médio (10) | **50** 🟢 |
 | **17** | Ambiente Docker | Elevation of Privilege | Permissões excessivas - containers executados como root com acesso privilegiado ao host | Baixa (5) | Médio (10) | **50** 🟢 |
 
 ---
