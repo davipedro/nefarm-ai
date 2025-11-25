@@ -326,26 +326,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: "text",
-              text: `📚 Nenhum artigo encontrado para '${query}'`,
+              text: "[]",  // Return empty array as JSON
             },
           ],
         };
       }
 
-      // Formatar resposta
-      let response = `📚 Encontrados ${results.length} artigo(s) para '${query}':\n\n`;
-
-      results.forEach((article, i) => {
-        response += `${i + 1}. ${article.title}\n`;
-        response += `   Autores: ${article.authors}\n`;
-        response += `   Ano: ${article.year}\n`;
-        response += `   PMCID: ${article.pmcid}\n`;
-        response += `   DOI: ${article.doi}\n`;
-        response += `   URL: ${article.url}\n\n`;
-      });
-
+      // Return results as JSON string
       return {
-        content: [{ type: "text", text: response }],
+        content: [{ type: "text", text: JSON.stringify(results) }],
       };
     } catch (e) {
       return {
@@ -386,36 +375,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: "text",
-              text: `🖼️ Nenhuma figura encontrada no artigo ${pmcid}`,
+              text: "[]",  // Return empty array as JSON
             },
           ],
         };
       }
 
-      // Formatar resposta
-      let response = `🖼️ Encontradas ${figures.length} figura(s) no artigo ${pmcid}`;
-      if (downloadImages) {
-        response += ` (imagens salvas em '${imagesDir}/')`;
-      }
-      response += ":\n\n";
-
-      figures.forEach((fig, i) => {
-        response += `${i + 1}. ${fig.title}\n`;
-        response += `   ID: ${fig.id}\n`;
-        const captionPreview =
-          fig.caption.length > 200
-            ? fig.caption.substring(0, 200) + "..."
-            : fig.caption;
-        response += `   Legenda: ${captionPreview}\n`;
-        response += `   URL: ${fig.url}\n`;
-        if (fig.local_path) {
-          response += `   📁 Arquivo local: ${fig.local_path}\n`;
-        }
-        response += `   Dimensões: ${fig.width || "N/A"}x${fig.height || "N/A"}\n\n`;
-      });
-
+      // Return figures as JSON string
       return {
-        content: [{ type: "text", text: response }],
+        content: [{ type: "text", text: JSON.stringify(figures) }],
       };
     } catch (e) {
       return {

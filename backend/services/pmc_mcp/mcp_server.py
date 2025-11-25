@@ -275,21 +275,12 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             if not results:
                 return [TextContent(
                     type="text",
-                    text=f"📚 Nenhum artigo encontrado para '{query}'"
+                    text="[]"  # Return empty array as JSON
                 )]
 
-            # Formatar resposta
-            response = f"📚 Encontrados {len(results)} artigo(s) para '{query}':\n\n"
-
-            for i, article in enumerate(results, 1):
-                response += f"{i}. {article['title']}\n"
-                response += f"   Autores: {article['authors']}\n"
-                response += f"   Ano: {article['year']}\n"
-                response += f"   PMCID: {article['pmcid']}\n"
-                response += f"   DOI: {article['doi']}\n"
-                response += f"   URL: {article['url']}\n\n"
-
-            return [TextContent(type="text", text=response)]
+            # Return results as JSON string
+            import json
+            return [TextContent(type="text", text=json.dumps(results, ensure_ascii=False))]
 
         except Exception as e:
             return [TextContent(type="text", text=f"❌ Erro ao buscar artigos: {str(e)}")]
@@ -311,25 +302,12 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             if not figures:
                 return [TextContent(
                     type="text",
-                    text=f"🖼️ Nenhuma figura encontrada no artigo {pmcid}"
+                    text="[]"  # Return empty array as JSON
                 )]
 
-            # Formatar resposta
-            response = f"🖼️ Encontradas {len(figures)} figura(s) no artigo {pmcid}"
-            if download_images:
-                response += f" (imagens salvas em '{images_dir}/')"
-            response += ":\n\n"
-
-            for i, fig in enumerate(figures, 1):
-                response += f"{i}. {fig['title']}\n"
-                response += f"   ID: {fig['id']}\n"
-                response += f"   Legenda: {fig['caption'][:200]}{'...' if len(fig['caption']) > 200 else ''}\n"
-                response += f"   URL: {fig['url']}\n"
-                if 'local_path' in fig:
-                    response += f"   📁 Arquivo local: {fig['local_path']}\n"
-                response += f"   Dimensões: {fig.get('width', 'N/A')}x{fig.get('height', 'N/A')}\n\n"
-
-            return [TextContent(type="text", text=response)]
+            # Return figures as JSON string
+            import json
+            return [TextContent(type="text", text=json.dumps(figures, ensure_ascii=False))]
 
         except Exception as e:
             return [TextContent(type="text", text=f"❌ Erro ao extrair figuras: {str(e)}")]
