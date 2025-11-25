@@ -1,10 +1,10 @@
-import express, { Application } from 'express';
+import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import compression from 'compression';
 import fs from 'fs';
 import https from 'https';
 import http from 'http';
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import axios from 'axios';
 import { config, validateConfig } from './config';
 import { logger } from './utils/simpleLogger';
 import {
@@ -113,47 +113,68 @@ function createApp(): Application {
     });
   });
 
-  // Proxy reverso para todas as rotas /api/v1/*
-  app.use(
-    '/api/v1',
-    createProxyMiddleware({
-      target: config.mcpClient.url,
-      changeOrigin: true,
-      pathRewrite: {
-        '^/api/v1': '', // Remove /api/v1 do path antes de enviar ao MCP Client
-      },
-      timeout: config.mcpClient.timeout,
-      proxyTimeout: config.mcpClient.timeout,
-      // Importante para requisições longas
-      ws: false,
-      selfHandleResponse: false,
-      // Configurações de buffer e streaming
-      buffer: undefined,
-      onError: (err, req, res) => {
-        logger.error('Erro no proxy', err.message);
-        if (!res.headersSent) {
-          res.status(502).json({
-            error: {
-              message: 'Erro ao comunicar com o serviço backend',
-              code: 'BAD_GATEWAY',
-              statusCode: 502,
-              timestamp: new Date().toISOString(),
-            },
-          });
-        }
-      },
-      onProxyReq: (proxyReq, req, res) => {
-        logger.debug(`Proxy: ${req.method} ${req.url} -> ${config.mcpClient.url}`);
-        // Remove timeout padrão do Node.js
-        proxyReq.setTimeout(0);
-      },
-      onProxyRes: (proxyRes, req, res) => {
-        logger.debug(`Proxy Response: ${proxyRes.statusCode}`);
-        // Remove timeout da resposta
-        proxyRes.setTimeout(0);
-      },
-    })
-  );
+  // Proxy reverso manual usando axios (mais controle sobre timeouts e conexões)
+  app.use('/api/v1', async (req: Request, res: Response) => {
+    try {
+      // Remove /api/v1 do path
+      const targetPath = req.url.replace(/^\//, '');
+      const targetUrl = `${config.mcpClient.url}/${targetPath}`;
+
+      logger.debug(`Proxy: ${req.method} ${targetPath} -> ${targetUrl}`);
+
+      // Fazer requisição ao MCP Client usando axios
+      const response = await axios({
+        method: req.method as any,
+        url: targetUrl,
+        data: req.body,
+        headers: {
+          'Content-Type': req.headers['content-type'] || 'application/json',
+        },
+        timeout: config.mcpClient.timeout,
+        validateStatus: () => true, // Aceita qualquer status code
+      });
+
+      logger.debug(`Proxy Response: ${response.status}`);
+
+      // Retornar resposta do MCP Client
+      res.status(response.status).json(response.data);
+    } catch (error: any) {
+      logger.error('Erro no proxy:', error.message);
+
+      // Verificar tipo de erro
+      if (error.code === 'ECONNREFUSED') {
+        return res.status(502).json({
+          error: {
+            message: 'MCP Client não está disponível',
+            code: 'SERVICE_UNAVAILABLE',
+            statusCode: 502,
+            timestamp: new Date().toISOString(),
+          },
+        });
+      }
+
+      if (error.code === 'ETIMEDOUT' || error.code === 'ECONNABORTED') {
+        return res.status(504).json({
+          error: {
+            message: 'Timeout ao comunicar com MCP Client',
+            code: 'GATEWAY_TIMEOUT',
+            statusCode: 504,
+            timestamp: new Date().toISOString(),
+          },
+        });
+      }
+
+      // Erro genérico
+      res.status(502).json({
+        error: {
+          message: 'Erro ao comunicar com o serviço backend',
+          code: 'BAD_GATEWAY',
+          statusCode: 502,
+          timestamp: new Date().toISOString(),
+        },
+      });
+    }
+  });
 
   // ========================================
   // Error Handlers

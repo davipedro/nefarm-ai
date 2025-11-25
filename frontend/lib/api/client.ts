@@ -15,7 +15,7 @@ export class ApiClient {
   private baseUrl: string;
   private maxRetries: number = 3;
   private retryDelay: number = 1000; // Initial retry delay in ms
-  private timeout: number = 120000; // 120 seconds timeout
+  private timeout: number = 1200000; // 20 minutes timeout
 
   constructor(baseUrl?: string) {
     this.baseUrl =

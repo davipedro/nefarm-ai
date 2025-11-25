@@ -49,10 +49,11 @@ export class MCPOrchestrator {
     // Listar todas as ferramentas disponíveis
     await this.listAllTools();
 
-    // Carregar workflows disponíveis
-    await this.loadWorkflows();
+    // Carregar workflows disponíveis (DESABILITADO - usar apenas tools diretas)
+    // await this.loadWorkflows();
+    this.workflows = []; // Workflows desabilitados
 
-    console.log(`✅ Orquestrador inicializado com ${this.tools.length} ferramentas e ${this.workflows.length} workflows`);
+    console.log(`✅ Orquestrador inicializado com ${this.tools.length} ferramentas (workflows desabilitados)`);
   }
 
   /**
@@ -66,6 +67,8 @@ export class MCPOrchestrator {
       },
       {
         capabilities: {},
+        // Aumentar timeout para 20 minutos (especialmente para ia-local com Ollama e workflows longos)
+        timeout: 1200000, // 20 minutos em ms
       }
     );
 

@@ -54,7 +54,7 @@ Responda APENAS no seguinte formato JSON (sem texto adicional):
         prompt: prompt,
         stream: false,
       }),
-      signal: AbortSignal.timeout(60000), // 60 segundos timeout
+      signal: AbortSignal.timeout(1200000), // 20 minutos timeout
     });
 
     if (!response.ok) {
