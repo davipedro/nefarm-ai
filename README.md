@@ -1,8 +1,8 @@
 # nefarm-ai
-Este projeto é uma aplicação interativa para auxiliar pesquisadores em estudos de modelagem molecular.
+Este projeto é uma aplicação interativa para auxiliar pesquisadores em estudos de análise farmacocinética.
 Ele realiza buscas no PubMed/Europe PMC, extrai textos e figuras dos artigos científicos, identifica automaticamente gráficos através de visão computacional e converte os dados contidos neles em formato CSV, facilitando a análise e comparação de resultados experimentais.
-# 🧬 Molecular Research Assistant  
-> Sistema modular que automatiza a busca, análise e extração de dados de artigos científicos do PubMed e Europe PMC, transformando gráficos experimentais em dados estruturados para pesquisa em modelagem molecular.
+# 🧬 Pharmacokinetic Research Assistant
+> Sistema modular que automatiza a busca, análise e extração de dados de artigos científicos do PubMed e Europe PMC, transformando gráficos experimentais em dados estruturados para pesquisa em análise farmacocinética.
 
 ---
 # 🧠 PMC Image Extractor
@@ -11,14 +11,41 @@ Extrator automatizado de figuras e legendas de artigos científicos disponíveis
 
 ---
 
+## O Problema
+
+### Contexto
+
+Pesquisadores em análise farmacocinética frequentemente precisam analisar e comparar dados experimentais publicados em artigos científicos. Esses dados geralmente estão apresentados na forma de **gráficos** (barras, linhas, dispersão, etc.) e não em formato tabulado.
+
+### A Dor Identificada
+
+| Problema | Impacto |
+|----------|---------|
+| **Extração manual de dados de gráficos** | Processo demorado e propenso a erros |
+| **Volume massivo de publicações** | Milhares de artigos relevantes para análise |
+| **Falta de padronização** | Cada artigo apresenta dados de forma diferente |
+| **Tempo gasto em tarefas repetitivas** | Pesquisadores dedicam horas a trabalho mecânico |
+
+### A Solução
+
+O NEFARM-AI automatiza todo o processo:
+
+1. **Busca automatizada** de artigos relevantes
+2. **Identificação inteligente** de figuras que são gráficos (vs. ilustrações/fotos)
+3. **Extração automática** dos dados contidos nos gráficos
+4. **Exportação estruturada** em formato CSV para análise
+
+> **Resultado:** Redução de horas de trabalho manual para minutos de processamento automatizado.
+
+
 ## 🚀 Visão Geral
 
 O **PMC Image Extractor** é uma ferramenta modular voltada à pesquisa científica, que permite:
 
 - 🔍 Buscar artigos por **PMCID**, **PMID** ou **termos de pesquisa** (Europe PMC);
 - 🖼️ Extrair automaticamente **figuras e legendas** do HTML do artigo no PMC;
-- 🧩 Classificar imagens (separando gráficos) utilizando IA local (MobileNetV2);
-- 🤖 Automação para extração dos dados dos gráficos utilizando Browse Use MCP;
+- 🧩 Classificar imagens (separando gráficos) utilizando IA local (Ollama - llama3:8b);
+- 📊 Extração automática dos dados dos gráficos utilizando Graph Extractor MCP (Gemini Vision);
 - 📦 Exportar os resultados para CSV.
 
 ---
