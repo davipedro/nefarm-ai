@@ -137,11 +137,4 @@ A superfície de ataque do sistema na arquitetura inicial inclui:
 | **Credenciais** | Possível exposição de chaves de API no código cliente |
 | **Logs e Auditoria** | Falta de rastreabilidade de ações |
 
-### 1.6.2. Próximos Passos
 
-Com base na arquitetura inicial, o próximo passo é realizar a **modelagem de ameaças** utilizando a metodologia **STRIDE** para identificar vulnerabilidades específicas e propor medidas de mitigação adequadas.
-
----
-
-**Documento:** Visão Inicial da Arquitetura
-**Próximo Documento:** [02-identificacao-ameacas.md](./02-identificacao-ameacas.md) — Identificação de Ameaças (STRIDE)
