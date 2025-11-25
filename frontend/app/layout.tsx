@@ -1,30 +1,26 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
-import "./globals.css"
-import { AppLayout } from "@/components/layout/app-layout"
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { Toaster } from "sonner";
 
-const _geist = Geist({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "NeFarm AI - Assistente de Pesquisa",
-  description: "Assistente de Pesquisa Molecular para artigos PubMed & PMC",
-
-}
+  title: "Nefarm AI - Pesquisa e extração de dados",
+  description: "Sistema de pesquisa e extração de dados de gráficos científicos",
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`font-sans antialiased`}>
-        <AppLayout>{children}</AppLayout>
-        <Analytics />
+      <body className={inter.className}>
+        {children}
+        <Toaster position="top-right" />
       </body>
     </html>
-  )
+  );
 }
