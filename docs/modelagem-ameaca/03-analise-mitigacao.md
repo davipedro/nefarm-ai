@@ -65,11 +65,11 @@ flowchart TD
 
 | ID | Componente | Categoria | Descrição | Prob PRÉ | Imp PRÉ | Risco PRÉ | Medida de Mitigação | Prob PÓS | Imp PÓS | Risco PÓS | Redução % | Status |
 |:---|:-----------|:----------|:----------|:---------|:--------|:----------|:--------------------|:---------|:--------|:----------|:----------|:-------|
-| **02** | Front → MCP | Denial of Service | Ataques de sobrecarga sem rate limiting | Alta (15) | Alto (15) | **225** 🔴 | Rate limiting por IP/usuário (100 req/min) | Baixa (5) | Média (10) | **50** 🟢 | **78%** | ✅ MITIGADA |
-| **03** | Front → MCP | Tampering | Injeção de prompts maliciosos | Alta (15) | Médio (10) | **150** 🟠 | Validação de schema e sanitização no gateway | Baixa (5) | Média (10) | **50** 🟢 | **67%** | ✅ MITIGADA |
-| **04** | Front → MCP | Info Disclosure | Exposição de APIs internas | Alta (15) | Médio (10) | **150** 🟠 | Gateway abstrai arquitetura com endpoints unificados | Baixa (5) | Baixa (5) | **25** 🟢 | **83%** | ✅ MITIGADA |
-| **08** | Frontend | Info Disclosure | Exposição de chaves de API no cliente | Média (10) | Alto (15) | **150** 🟠 | Gateway gerencia credenciais; frontend sem acesso direto | Baixa (5) | Baixa (5) | **25** 🟢 | **83%** | ✅ MITIGADA |
-| **09** | PMC MCP | Denial of Service | Sobrecarga dos serviços MCP | Média (10) | Médio (10) | **100** 🟡 | Gateway limita payload size e timeout de requisições | Baixa (5) | Baixa (5) | **25** 🟢 | **75%** | ✅ MITIGADA |
+| **01** | Front → MCP | Denial of Service | Ataques de sobrecarga sem rate limiting | Alta (15) | Alto (15) | **225** 🔴 | Rate limiting | Baixa (5) | Média (10) | **50** 🟢 | **78%** | ✅ MITIGADA |
+| **02** | Front → MCP | Tampering | Injeção de prompts maliciosos | Alta (15) | Médio (10) | **150** 🟠 | Sanitização no gateway | Baixa (5) | Média (10) | **50** 🟢 | **67%** | ✅ MITIGADA |
+| **03** | Front → MCP | Info Disclosure | Exposição de APIs internas | Alta (15) | Médio (10) | **150** 🟠 | Gateway abstrai arquitetura com endpoints unificados | Baixa (5) | Baixa (5) | **25** 🟢 | **83%** | ✅ MITIGADA |
+| **04** | Frontend | Info Disclosure | Exposição de chaves de API no cliente | Média (10) | Alto (15) | **150** 🟠 | Gateway gerencia credenciais; frontend sem acesso direto | Baixa (5) | Baixa (5) | **25** 🟢 | **83%** | ✅ MITIGADA |
+| **05** | PMC MCP | Denial of Service | Sobrecarga dos serviços MCP | Média (10) | Médio (10) | **100** 🟡 | Gateway limita payload size e timeout de requisições | Baixa (5) | Baixa (5) | **25** 🟢 | **75%** | ✅ MITIGADA |
 
 ---
 
