@@ -42,6 +42,7 @@ PORT=3000 npm start
 📋 Rotas disponíveis:
    GET  http://localhost:3000/health
    GET  http://localhost:3000/tools
+   GET  http://localhost:3000/workflows
    POST http://localhost:3000/query
    POST http://localhost:3000/execute
 ```

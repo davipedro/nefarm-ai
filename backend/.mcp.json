@@ -2,12 +2,7 @@
   "mcpServers": {
     "ia-local-classifier": {
       "command": "node",
-      "args": ["../src/ia_local/mcp_server.js"],
-      "env": {}
-    },
-    "test-mcp": {
-      "command": "node",
-      "args": ["C:/projetos/nefarm-ai/backend/services/test_mcp/mcp_server_test.js"],
+      "args": ["../ia_local/mcp_server.js"],
       "env": {}
     },
     "pmc-mcp": {
@@ -15,9 +10,9 @@
       "args": ["../pmc_mcp/mcp_server.js"],
       "env": {}
     },
-    "browser-use": {
-      "command": "node",
-      "args": ["services/mcp_browse_use/mcp_server.js"],
+    "graph-extractor": {
+      "command": "python",
+      "args": ["../mcp_graph_extractor/mcp_server.py"],
       "env": {}
     }
   }
