@@ -97,6 +97,53 @@
           "description": "Buscar artigos no Europe PMC"
         }
       ]
+    },
+    {
+      "id": "search_article_details",
+      "name": "Obter detalhes do artigo com gráficos",
+      "description": "Extrai figuras automaticamente quando artigo é selecionado pelo usuário",
+      "use_cases": [
+        "Quando usuário clica em um artigo",
+        "Quando usuário pede detalhes de artigo com PMCID",
+        "Exemplo: 'ver detalhes do artigo PMC12345678'"
+      ],
+      "base_steps": [
+        {
+          "step": 1,
+          "tool": "extract_figures",
+          "server": "pmc-mcp",
+          "description": "Extrair todas as figuras do artigo"
+        }
+      ]
+    },
+    {
+      "id": "extract_single_graph",
+      "name": "Extrair dados de gráfico específico",
+      "description": "Baixa imagem e extrai dados de um gráfico específico de um artigo",
+      "use_cases": [
+        "Quando usuário clica em 'Extrair Dados' em um gráfico específico",
+        "Quando usuário pede para extrair dados de figura específica"
+      ],
+      "base_steps": [
+        {
+          "step": 1,
+          "tool": "extract_figures",
+          "server": "pmc-mcp",
+          "description": "Baixar imagem do gráfico",
+          "arguments": {
+            "download_images": true
+          }
+        },
+        {
+          "step": 2,
+          "tool": "extract_graph_data",
+          "server": "graph-extractor",
+          "description": "Extrair dados numéricos do gráfico usando Gemini Vision",
+          "input_mapping": {
+            "image_path": "$step.1.result[0].local_path"
+          }
+        }
+      ]
     }
   ]
 }

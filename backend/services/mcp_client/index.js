@@ -187,14 +187,71 @@ async function handleRequest(req, res) {
       return;
     }
 
+    // POST /workflow - Executa um workflow específico por ID
+    if (method === "POST" && url === "/workflow") {
+      if (!orchestrator) {
+        sendJSON(res, 503, {
+          error: "Orquestrador não inicializado",
+        });
+        return;
+      }
+
+      const body = await parseBody(req);
+
+      if (!body.workflow_id) {
+        sendJSON(res, 400, {
+          error: "Campo 'workflow_id' é obrigatório",
+        });
+        return;
+      }
+
+      // Encontrar workflow
+      const workflow = orchestrator.workflows.find(
+        (w) => w.id === body.workflow_id
+      );
+
+      if (!workflow) {
+        sendJSON(res, 404, {
+          error: `Workflow '${body.workflow_id}' não encontrado`,
+          availableWorkflows: orchestrator.workflows.map((w) => w.id),
+        });
+        return;
+      }
+
+      // Construir plano de workflow com argumentos do usuário
+      const workflowPlan = {
+        workflow_id: workflow.id,
+        custom_workflow: false,
+        reasoning: `Executing ${workflow.name}`,
+        steps: workflow.base_steps.map((step) => ({
+          ...step,
+          arguments: {
+            ...(step.arguments || {}),
+            ...(body.arguments || {}),
+          },
+        })),
+      };
+
+      // Executar workflow
+      const result = await orchestrator.executeWorkflow(workflowPlan);
+
+      sendJSON(res, result.success ? 200 : 500, {
+        timestamp: new Date().toISOString(),
+        ...result,
+      });
+      return;
+    }
+
     // Rota não encontrada
     sendJSON(res, 404, {
       error: "Rota não encontrada",
       availableRoutes: [
         "GET /health",
         "GET /tools",
+        "GET /workflows",
         "POST /query",
         "POST /execute",
+        "POST /workflow",
       ],
     });
   } catch (error) {
