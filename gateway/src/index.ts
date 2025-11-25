@@ -123,22 +123,34 @@ function createApp(): Application {
         '^/api/v1': '', // Remove /api/v1 do path antes de enviar ao MCP Client
       },
       timeout: config.mcpClient.timeout,
+      proxyTimeout: config.mcpClient.timeout,
+      // Importante para requisições longas
+      ws: false,
+      selfHandleResponse: false,
+      // Configurações de buffer e streaming
+      buffer: undefined,
       onError: (err, req, res) => {
         logger.error('Erro no proxy', err.message);
-        res.status(502).json({
-          error: {
-            message: 'Erro ao comunicar com o serviço backend',
-            code: 'BAD_GATEWAY',
-            statusCode: 502,
-            timestamp: new Date().toISOString(),
-          },
-        });
+        if (!res.headersSent) {
+          res.status(502).json({
+            error: {
+              message: 'Erro ao comunicar com o serviço backend',
+              code: 'BAD_GATEWAY',
+              statusCode: 502,
+              timestamp: new Date().toISOString(),
+            },
+          });
+        }
       },
       onProxyReq: (proxyReq, req, res) => {
         logger.debug(`Proxy: ${req.method} ${req.url} -> ${config.mcpClient.url}`);
+        // Remove timeout padrão do Node.js
+        proxyReq.setTimeout(0);
       },
       onProxyRes: (proxyRes, req, res) => {
         logger.debug(`Proxy Response: ${proxyRes.statusCode}`);
+        // Remove timeout da resposta
+        proxyRes.setTimeout(0);
       },
     })
   );
@@ -201,6 +213,11 @@ async function startServer(): Promise<void> {
       server = http.createServer(app);
     }
 
+    // Configura timeouts do servidor para requisições longas
+    server.setTimeout(config.mcpClient.timeout + 10000); // Timeout maior que o do proxy
+    server.keepAliveTimeout = config.mcpClient.timeout + 10000;
+    server.headersTimeout = config.mcpClient.timeout + 15000;
+
     // Inicia servidor
     server.listen(config.port, () => {
       console.log('========================================');
@@ -210,6 +227,7 @@ async function startServer(): Promise<void> {
       console.log(`Porta: ${config.port}`);
       console.log(`Ambiente: ${config.nodeEnv}`);
       console.log(`MCP Client: ${config.mcpClient.url}`);
+      console.log(`Timeout: ${config.mcpClient.timeout}ms`);
       console.log(`Rate Limit (não auth): ${config.rateLimit.unauthenticated} req/min`);
       console.log(`Rate Limit (auth): ${config.rateLimit.authenticated} req/min`);
       console.log(`Rate Limit (IA): ${config.promptInjection.aiRateLimit} req/min`);

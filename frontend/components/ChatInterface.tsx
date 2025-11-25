@@ -167,13 +167,45 @@ export const ChatInterface = () => {
 
     } catch (error: any) {
       console.error("Error querying backend:", error);
-      const errorMessage: Message = {
-        id: Date.now().toString(),
-        type: "assistant",
-        content: error.message || "Erro de conexão com o servidor. Verifique se o backend está rodando.",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-      toast.error("Erro de conexão");
+
+      // Tratamento específico para erros do Gateway
+      if (error.isGatewayError) {
+        const gatewayErrorMessages: Record<string, string> = {
+          PROMPT_INJECTION_DETECTED: "⚠️ Requisição bloqueada: conteúdo suspeito detectado pelo sistema de segurança",
+          RATE_LIMIT_EXCEEDED: "⏱️ Limite de requisições excedido. Aguarde alguns segundos.",
+          AI_RATE_LIMIT_EXCEEDED: "🤖 Limite de requisições para IA excedido. Aguarde antes de fazer nova requisição.",
+          PAYLOAD_TOO_LARGE: "📦 Conteúdo muito grande. Máximo permitido: 10MB",
+          BAD_GATEWAY: "🔌 Erro ao comunicar com o servidor backend",
+          CORS_ERROR: "🚫 Acesso bloqueado: origem não autorizada"
+        };
+
+        const friendlyMessage = gatewayErrorMessages[error.code] || error.message;
+
+        const errorMessage: Message = {
+          id: Date.now().toString(),
+          type: "assistant",
+          content: friendlyMessage,
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+
+        // Toast com ícone apropriado
+        if (error.code === 'PROMPT_INJECTION_DETECTED') {
+          toast.warning(friendlyMessage);
+        } else if (error.code === 'RATE_LIMIT_EXCEEDED' || error.code === 'AI_RATE_LIMIT_EXCEEDED') {
+          toast.warning(friendlyMessage);
+        } else {
+          toast.error(friendlyMessage);
+        }
+      } else {
+        // Erro genérico
+        const errorMessage: Message = {
+          id: Date.now().toString(),
+          type: "assistant",
+          content: error.message || "Erro de conexão com o servidor. Verifique se o backend está rodando.",
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+        toast.error("Erro de conexão");
+      }
     } finally {
       setIsLoading(false);
     }

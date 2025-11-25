@@ -15,7 +15,7 @@ export class ApiClient {
   private baseUrl: string;
   private maxRetries: number = 3;
   private retryDelay: number = 1000; // Initial retry delay in ms
-  private timeout: number = 30000; // 30 seconds timeout
+  private timeout: number = 120000; // 120 seconds timeout
 
   constructor(baseUrl?: string) {
     this.baseUrl =
@@ -142,6 +142,16 @@ export class ApiClient {
           errorData = JSON.parse(errorText);
         } catch {
           errorData = { error: errorText, success: false };
+        }
+
+        // Check for Gateway-specific errors (throw to be caught by UI)
+        const gatewayErrorCode = errorData?.error?.code;
+        if (gatewayErrorCode) {
+          const gatewayError: any = new Error(errorData?.error?.message || 'Erro do Gateway');
+          gatewayError.code = gatewayErrorCode;
+          gatewayError.statusCode = response.status;
+          gatewayError.isGatewayError = true;
+          throw gatewayError;
         }
 
         // Check if error is retryable
