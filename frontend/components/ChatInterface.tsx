@@ -110,13 +110,23 @@ export const ChatInterface = () => {
       const articlesToProcess = articles;
       const updatedArticles = await Promise.all(
         articlesToProcess.map(async (article) => {
+          // Skip articles without PMCID (only PMID available)
+          if (!article.pmcid) {
+            console.warn(`Article ${article.id} has no PMCID, cannot extract figures`);
+            return {
+              ...article,
+              graphCount: 0,
+              graphs: [],
+            };
+          }
+
           try {
             // Extract figures for this article
             const figuresResponse = await apiClient.executeTool(
               "pmc-mcp",
               "extract_figures",
               {
-                pmcid: article.pmcid || article.id,
+                pmcid: article.pmcid,
                 download_images: false, // Don't download yet, just get metadata
                 images_dir: "imagens"
               }
@@ -225,6 +235,19 @@ export const ChatInterface = () => {
     try {
       let figures: Graph[] = article.graphs || [];
 
+      // Check if article has PMCID
+      if (!article.pmcid) {
+        toast.error("Artigo não possui PMCID");
+        const errorMsg: Message = {
+          id: Date.now().toString(),
+          type: "assistant",
+          content: "Este artigo não está disponível no PubMed Central e não possui figuras disponíveis.",
+        };
+        setMessages((prev) => [...prev, errorMsg]);
+        setIsLoading(false);
+        return;
+      }
+
       // If article already has graphs loaded, use them
       // Otherwise, extract figures with download enabled
       if (!article.graphs || article.graphs.length === 0) {
@@ -233,7 +256,7 @@ export const ChatInterface = () => {
           "pmc-mcp",
           "extract_figures",
           {
-            pmcid: article.pmcid || article.id,
+            pmcid: article.pmcid,
             download_images: true,
             images_dir: "imagens"
           }
@@ -261,7 +284,7 @@ export const ChatInterface = () => {
           "pmc-mcp",
           "extract_figures",
           {
-            pmcid: article.pmcid || article.id,
+            pmcid: article.pmcid,
             download_images: true,
             images_dir: "imagens"
           }
@@ -312,17 +335,85 @@ export const ChatInterface = () => {
     const loadingMessage: Message = {
       id: Date.now().toString(),
       type: "assistant",
-      content: "Extraindo dados do gráfico...",
+      content: "Verificando se é um gráfico...",
     };
     setMessages((prev) => [...prev, loadingMessage]);
 
     try {
-      // If no local_path, we need to download the image first
-      let imagePath = (graph as any).local_path || graph.imageUrl;
+      // Check if image has local_path
+      const imagePath = (graph as any).local_path;
 
       if (!imagePath) {
-        throw new Error("Caminho da imagem não encontrado");
+        // Remove loading message
+        setMessages((prev) => prev.filter((m) => m.id !== loadingMessage.id));
+        toast.error("Imagem não foi baixada localmente");
+        const errorMsg: Message = {
+          id: Date.now().toString(),
+          type: "assistant",
+          content: "A imagem precisa ser baixada localmente antes de extrair dados. Tente clicar no artigo novamente.",
+        };
+        setMessages((prev) => [...prev, errorMsg]);
+        setIsLoading(false);
+        return;
       }
+
+      // First, classify the image using IA local to verify if it's actually a graph
+      const classificationResponse = await apiClient.executeTool(
+        "ia-local-classifier",
+        "classify_image",
+        {
+          image_description: graph.caption || graph.type || "Image without description"
+        }
+      );
+
+      // Parse classification result
+      let isGraph = false;
+      let confidence = 0;
+      let justification = "";
+
+      if (classificationResponse.success && classificationResponse.result) {
+        const resultText = typeof classificationResponse.result === 'string'
+          ? classificationResponse.result
+          : classificationResponse.result[0]?.text || "";
+
+        // Try to extract JSON from the response
+        try {
+          const jsonMatch = resultText.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const classification = JSON.parse(jsonMatch[0]);
+            isGraph = classification.classificacao === "GRAFICO";
+            confidence = classification.confianca || 0;
+            justification = classification.justificativa || "";
+          }
+        } catch (e) {
+          console.error("Error parsing classification JSON:", e);
+          // If parsing fails, assume it's not a graph to be safe
+          isGraph = false;
+        }
+      }
+
+      // If not a graph, show warning and stop
+      if (!isGraph) {
+        setMessages((prev) => prev.filter((m) => m.id !== loadingMessage.id));
+        toast.warning("Esta imagem não parece ser um gráfico");
+        const warningMsg: Message = {
+          id: Date.now().toString(),
+          type: "assistant",
+          content: `A IA local classificou esta imagem como NÃO sendo um gráfico (confiança: ${(confidence * 100).toFixed(0)}%). ${justification ? `Motivo: ${justification}` : ''}\n\nNão é possível extrair dados numéricos desta imagem.`,
+        };
+        setMessages((prev) => [...prev, warningMsg]);
+        setIsLoading(false);
+        return;
+      }
+
+      // Update loading message
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === loadingMessage.id
+            ? { ...m, content: `Gráfico confirmado (${(confidence * 100).toFixed(0)}% confiança). Extraindo dados...` }
+            : m
+        )
+      );
 
       // Execute graph extraction tool directly
       const response = await apiClient.executeTool(

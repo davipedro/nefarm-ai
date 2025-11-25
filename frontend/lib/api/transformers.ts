@@ -18,14 +18,21 @@ export class DataTransformer {
    * These will be populated in subsequent steps or use placeholders
    */
   static transformArticle(backendArticle: BackendArticle): Article {
+    // Ensure PMCID has the PMC prefix if it exists
+    let pmcid = backendArticle.pmcid || "";
+    if (pmcid && !pmcid.startsWith("PMC")) {
+      pmcid = `PMC${pmcid}`;
+    }
+
     return {
-      id: backendArticle.pmcid || backendArticle.pmid || "",
+      id: pmcid || backendArticle.pmid || "",
       title: backendArticle.title || "Untitled",
       authors: backendArticle.authors
         ? backendArticle.authors.split(",").map((a) => a.trim())
         : [],
       year: parseInt(backendArticle.year) || new Date().getFullYear(),
       pmid: backendArticle.pmid || "",
+      pmcid: pmcid || undefined,
       journal: "N/A", // Not provided by backend
       abstract: "Clique para ver detalhes do artigo", // Placeholder
       doi: backendArticle.doi || "",
@@ -39,7 +46,7 @@ export class DataTransformer {
    * Transform backend figure to frontend Graph model
    */
   static transformFigure(backendFigure: BackendFigure): Graph {
-    return {
+    const graph: Graph = {
       id: backendFigure.id,
       imageUrl: backendFigure.url,
       caption: backendFigure.caption || "Sem legenda",
@@ -49,6 +56,13 @@ export class DataTransformer {
       ),
       extractedData: undefined, // Will be populated after graph extraction
     };
+
+    // Preserve local_path if it exists
+    if ((backendFigure as any).local_path) {
+      graph.local_path = (backendFigure as any).local_path;
+    }
+
+    return graph;
   }
 
   /**

@@ -19,6 +19,7 @@ export interface Article {
   doi: string;
   license: string;
   pmid: string;
+  pmcid?: string;
   graphCount: number;
   graphs: Graph[];
 }
