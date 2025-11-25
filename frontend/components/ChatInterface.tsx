@@ -380,8 +380,16 @@ export const ChatInterface = () => {
         try {
           const jsonMatch = resultText.match(/\{[\s\S]*\}/);
           if (jsonMatch) {
-            const classification = JSON.parse(jsonMatch[0]);
-            isGraph = classification.classificacao === "GRAFICO";
+            const outerJson = JSON.parse(jsonMatch[0]);
+
+            // Check if we have resposta_bruta field (double wrapped JSON)
+            let classification = outerJson;
+            if (outerJson.resposta_bruta) {
+              // Parse the inner JSON
+              classification = JSON.parse(outerJson.resposta_bruta);
+            }
+
+            isGraph = classification.classificacao === "GRAFICO" || classification.classificacao === "GRÁFICO";
             confidence = classification.confianca || 0;
             justification = classification.justificativa || "";
           }
