@@ -91,6 +91,22 @@ async function handleRequest(req, res) {
       return;
     }
 
+    // GET /workflows - Lista todos os workflows disponíveis
+    if (method === "GET" && url === "/workflows") {
+      if (!orchestrator) {
+        sendJSON(res, 503, {
+          error: "Orquestrador não inicializado",
+        });
+        return;
+      }
+
+      sendJSON(res, 200, {
+        workflows: orchestrator.workflows,
+        total: orchestrator.workflows.length,
+      });
+      return;
+    }
+
     // POST /query - Processa uma consulta
     if (method === "POST" && url === "/query") {
       if (!orchestrator) {
@@ -208,6 +224,7 @@ async function startServer() {
       console.log("\n📋 Rotas disponíveis:");
       console.log(`   GET  http://localhost:${PORT}/health`);
       console.log(`   GET  http://localhost:${PORT}/tools`);
+      console.log(`   GET  http://localhost:${PORT}/workflows`);
       console.log(`   POST http://localhost:${PORT}/query`);
       console.log(`   POST http://localhost:${PORT}/execute\n`);
     });
