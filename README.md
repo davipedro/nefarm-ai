@@ -11,6 +11,33 @@ Extrator automatizado de figuras e legendas de artigos científicos disponíveis
 
 ---
 
+## O Problema
+
+### Contexto
+
+Pesquisadores em modelagem molecular frequentemente precisam analisar e comparar dados experimentais publicados em artigos científicos. Esses dados geralmente estão apresentados na forma de **gráficos** (barras, linhas, dispersão, etc.) e não em formato tabulado.
+
+### A Dor Identificada
+
+| Problema | Impacto |
+|----------|---------|
+| **Extração manual de dados de gráficos** | Processo demorado e propenso a erros |
+| **Volume massivo de publicações** | Milhares de artigos relevantes para análise |
+| **Falta de padronização** | Cada artigo apresenta dados de forma diferente |
+| **Tempo gasto em tarefas repetitivas** | Pesquisadores dedicam horas a trabalho mecânico |
+
+### A Solução
+
+O NEFARM-AI automatiza todo o processo:
+
+1. **Busca automatizada** de artigos relevantes
+2. **Identificação inteligente** de figuras que são gráficos (vs. ilustrações/fotos)
+3. **Extração automática** dos dados contidos nos gráficos
+4. **Exportação estruturada** em formato CSV para análise
+
+> **Resultado:** Redução de horas de trabalho manual para minutos de processamento automatizado.
+
+
 ## 🚀 Visão Geral
 
 O **PMC Image Extractor** é uma ferramenta modular voltada à pesquisa científica, que permite:
